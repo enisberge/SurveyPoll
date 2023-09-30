@@ -1,0 +1,418 @@
+﻿@using SurveryPoll.DataAccess.Entities;
+@using X.PagedList.Mvc.Core;
+@model X.PagedList.IPagedList<QuestionWithOptionsViewModel>
+
+
+@{
+    ViewData["Title"] = "Anket Oluştur";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- Page Heading -->
+@*<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h5 class="h5 mb-0 text-gray-800">Anket Oluştur</h5>
+    <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
+    </a>
+</div>*@
+@section Styles{
+    <style>
+
+        .alert-success.new {
+            background: none;
+            border: none;
+            border-left: 4px solid green;
+            border-radius: 0;
+            background: #fff;
+            box-shadow: 1px 1px 4px rgba(0, 0, 0, .2);
+        }
+
+        .alert-success.new2 {
+            background: #f3f8f3;
+            border: none;
+            border-left: 4px solid #45D298;
+            border-radius: 0;
+            box-shadow: 1px 1px 4px rgba(0, 0, 0, .2);
+        }
+
+            .alert-success.new2.p-4 {
+                padding: 0.75rem 0.75rem !important;
+            }
+
+            .alert-success.new2 .fa {
+                color: #45D298;
+                display: table-cell;
+                text-align: center;
+                vertical-align: middle;
+                font-size: 40px;
+            }
+
+        .alert-success .alert-body {
+            padding-left: 0.75rem;
+            display: table-cell;
+            color: rgba(0,0,0,0.5);
+        }
+
+        .alert-success .alert-header {
+            font-weight: 700;
+            color: #45D298;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toast-error {
+            background-color: brown;
+            color: white;
+        }
+
+        .toast-success {
+            background-color: darkgreen;
+            color: white;
+        }
+    </style>
+
+}
+<div class="col-lg-12">
+    <div class="card shadow">
+        <div class="card-header">
+            <h6 class="card-title mb-0 text-primary">Anket Oluştur</h6>
+        </div>
+        <div class="card-body">
+            <div id="basic-pills-wizard" class="twitter-bs-wizard">
+                <ul class="twitter-bs-wizard-nav">
+                    <li class="nav-item">
+                        <a href="#seller-details" class="nav-link" data-toggle="tab">
+                            <div class="step-icon" data-bs-toggle="tooltip" data-bs-placement="top"
+                                 title="Seller Details">
+                                <i class="far fa-user"></i>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#company-document" class="nav-link" data-toggle="tab">
+                            <div class="step-icon" data-bs-toggle="tooltip" data-bs-placement="top"
+                                 title="Company Document">
+                                <i class="fas fa-question"></i>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#bank-detail" class="nav-link" data-toggle="tab">
+                            <div class="step-icon" data-bs-toggle="tooltip" data-bs-placement="top"
+                                 title="Bank Details">
+                                <i class="fas fa-share-square"></i>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="tab-content twitter-bs-wizard-tab-content">
+
+
+                    <div class="tab-pane" id="seller-details">
+                        <div class="container">
+                            <div class="alert alert-success new2 p-4">
+                                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                <div class="alert-body">
+                                    <h6 class="alert-header">Bilgilendirme</h6>
+                                    <ul>
+                                        <li>
+                                            Üye olmayan kullanıcılar en fazla 4 soruluk anket oluşturabilirler.
+                                        </li>
+                                        <li>
+                                            Üye olmayan kullanıcılar oluşturdukları anketi en fazla 5 kişiyle paylaşabilirler.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <h5>Anket Bilgilerini girin</h5>
+                        </div>
+                        <form>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <label for="basicpill-firstname-input"
+                                               class="form-label">Ad</label>
+                                        <input type="text" class="form-control"
+                                               id="basicpill-firstname-input">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <label for="basicpill-lastname-input"
+                                               class="form-label">Soyad</label>
+                                        <input type="text" class="form-control"
+                                               id="basicpill-lastname-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <label for="basicpill-phoneno-input"
+                                               class="form-label">Anket Başlığı</label>
+                                        <input type="text" class="form-control"
+                                               id="basicpill-phoneno-input">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <ul class="pager wizard twitter-bs-wizard-pager-link">
+                            <li class="next">
+                                <a href="javascript: void(0);" class="btn btn-primary"
+                                   onclick="nextTab()">
+                                    İleri <i class="bx bx-chevron-right ms-1"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tab-pane" id="company-document">
+                        <div>
+                            <div class="mb-4">
+                                <h5>Sorular</h5>
+                            </div>
+                            <div class="row" id="QuestionListContainer">
+                            </div>
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                </ul>
+                            </nav>
+                            <ul class="pager wizard twitter-bs-wizard-pager-link">
+                                <li class="previous">
+                                    <a href="javascript: void(0);"
+                                       class="btn btn-primary" onclick="nextTab()">
+                                        <i class="bx bx-chevron-left me-1"></i> Geri
+                                    </a>
+                                </li>
+                                <li class="next">
+                                    <a href="javascript: void(0);"
+                                       class="btn btn-primary" onclick="nextTab()">
+                                        İleri <i class="bx bx-chevron-right ms-1"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="bank-detail">
+                        <div>
+                            <div class="mb-4">
+                                <h5>Payment Details</h5>
+                            </div>
+                            <form>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="basicpill-namecard-input"
+                                                   class="form-label">Name on Card</label>
+                                            <input type="text" class="form-control"
+                                                   id="basicpill-namecard-input">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Credit Card Type</label>
+                                            <select class="form-select">
+                                                <option selected>Select Card Type</option>
+                                                <option value="AE">American Express</option>
+                                                <option value="VI">Visa</option>
+                                                <option value="MC">MasterCard</option>
+                                                <option value="DI">Discover</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="basicpill-cardno-input"
+                                                   class="form-label">Credit Card Number</label>
+                                            <input type="text" class="form-control"
+                                                   id="basicpill-cardno-input">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="basicpill-card-verification-input"
+                                                   class="form-label">Card Verification Number</label>
+                                            <input type="text" class="form-control"
+                                                   id="basicpill-card-verification-input">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="basicpill-expiration-input"
+                                                   class="form-label">Expiration Date</label>
+                                            <input type="text" class="form-control"
+                                                   id="basicpill-expiration-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <ul class="pager wizard twitter-bs-wizard-pager-link">
+                                <li class="previous">
+                                    <a href="javascript: void(0);"
+                                       class="btn btn-primary" onclick="nextTab()">
+                                        <i class="bx bx-chevron-left me-1"></i> Geri
+                                    </a>
+                                </li>
+                                <li class="float-end">
+                                    <a href="javascript: void(0);"
+                                       class="btn btn-primary" data-bs-toggle="modal"
+                                       data-bs-target=".confirmModal">
+                                        Save
+                                        Changes
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript">
+        var surveyData = {};
+        function toggleButtons(questionId) {
+            var removeButton = $(".btnRemoveQuestion[question-id='" + questionId + "']");
+            var addButton = $(".btnAddQuestion[question-id='" + questionId + "']");
+
+            if (removeButton.css("display") === "block") {
+                // Eğer Remove butonu görünüyorsa, Remove butonunu gizle ve Add butonunu göster
+                removeButton.css("display", "none");
+                addButton.css("display", "block");
+            } else {
+                // Eğer Add butonu görünüyorsa, Add butonunu gizle ve Remove butonunu göster
+                removeButton.css("display", "block");
+                addButton.css("display", "none");
+            }
+        }
+        $(document).ready(function () {
+        
+            getQuestionData(1);
+
+            var cardsContainer = $('.card');
+
+            cardsContainer.on('click', '.btnAddQuestion', function () {
+                // Ekle düğmesine tıklanıldığında yapılacak işlemleri burada gerçekleştirin
+                var questionId = $(this).attr('question-id');
+                var selectedOption = $("input[type='radio'][name='question-" + questionId + "']:checked");
+
+
+                if (selectedOption.length === 0) {
+                    toastr.error("Şıklardan birini seçmeden soru ekleyemezsiniz !");
+                    return false;
+                }
+                var selectedOptionValue = selectedOption.val(); // Seçilen radio butonunun value'sini alın
+
+                // JSON objesine veriyi ekle
+                surveyData[questionId] =parseInt(selectedOptionValue);
+                toggleButtons(questionId);
+                toastr.success("Soru eklendi.");
+            });
+            cardsContainer.on('click', '.btnRemoveQuestion', function () {
+                var questionIdToRemove = $(this).attr("question-id"); // Silinecek sorunun ID'sini al
+                if (surveyData.hasOwnProperty(questionIdToRemove)) {
+                    delete surveyData[questionIdToRemove]; // Soruyu surveyData objesinden sil
+                    $("input[type='radio'][name='question-" + questionIdToRemove + "']").prop("checked", false);
+                    toggleButtons(questionIdToRemove);
+                    toastr.success("Soru Çıkarıldı.");
+                }
+
+                // İlgili soru ve seçenekleri sildikten sonra başka bir işlem yapabilirsiniz
+                // Örneğin, sileme işlemini kullanıcı arayüzünde gösterme gibi.
+            });
+
+            // Sayfa numaralarına tıklandığında ilgili sayfadaki verileri al
+            $('.pagination').on('click', '.sayfa', function () {
+                var sayfaNo = $(this).data('sayfano');
+                getQuestionData(sayfaNo);
+            });
+        });
+        function getQuestionData(page) {
+            var pageSize = 6;
+            $.ajax({
+                url: '/Survey/GetQuestion',
+                type: 'GET',
+                data: { SayfaNo: page, pageSize: pageSize }, // Sayfa numarasını ve sayfa boyutunu gönder
+                success: function (result) {
+                    var questionListContainer = $('#QuestionListContainer');
+                    questionListContainer.empty();
+                    var htmlContent = "";
+                    $.each(result.data, function (index, question) {
+                        var htmlContent = "<div class='col-md-4'>" +
+                            "<div class='card mb-4 border-bottom-danger'>" +
+                            "<div class='card-header p-2'>" +
+                            "<a class='btn btn-outline-success btn-sm float-right btnAddQuestion' question-id='" + question.id + "'><i class='fas fa-check'></i>&nbsp; Ekle</a>" +
+                            "<a class='btn btn-outline-danger btn-sm float-right btnRemoveQuestion' style='display:none' question-id='" + question.id + "'><i class='fas fa-check'></i>&nbsp; Çıkar</a>" +
+                            "</div>" +
+                            "<div class='card-body p-3'>" +
+                            "<h7 style='font-weight:bold'>" + question.questionText + "</h7>" +
+                            "<ul class='pl-1 mt-2'>";
+
+                        $.each(question.questionOptions, function (index, option) {
+                            htmlContent += "<li style='font-size:14px; list-style: none;'>" +
+                                "<input type='radio' name='question-" + question.id + "' value='" + option.id + "' id='option-" + option.id + "'>&nbsp;" +
+                                "<label for='option-" + option.id + "'>" + option.optionText + "</label>" +
+                                "</li>";
+
+
+                        });
+
+                        htmlContent += "</ul>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>";
+
+                        questionListContainer.append(htmlContent);
+
+                        $.each(surveyData, function (questionId, optionId) {
+                            var selector = 'input[type="radio"][name="question-' + questionId + '"][value="' + optionId + '"]';
+
+                            // Eğer bu seçici ile eşleşen bir radio düğmesi varsa, seçili yap
+                            if ($(selector).length > 0) {
+                                $(selector).prop('checked', true);
+                            }
+                            var removeButton = $(".btnRemoveQuestion[question-id='" + questionId + "']");
+                            var addButton = $(".btnAddQuestion[question-id='" + questionId + "']");
+
+                            removeButton.css("display", "block");
+                            addButton.css("display", "none");
+                        });
+
+
+                        
+                    });
+
+                    var totalPages = result.totalPages;
+                    updatePageNumbers(totalPages, page);
+                }
+            });
+        }
+        function updatePageNumbers(totalPages, currentPage) {
+            // Sayfa numaralarını güncelleyin
+            var pagination = $('.pagination');
+            pagination.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var activeClass = (i === currentPage) ? 'active' : '';
+                pagination.append('<li class="page-item"><a href="#" class="sayfa page-link" ' + activeClass + '" data-sayfano="' + i + '">' + i + '</a></li>');
+
+            }
+        }
+
+
+    </script>
+}

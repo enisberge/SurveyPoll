@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SurveryPoll.DataAccess", "Data\SurveryPoll.DataAccess.csproj", "{26740856-6948-478F-BB3E-C952DE41FABF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SurveyPoll.WebUI", "SurveyPoll.WebUI\SurveyPoll.WebUI.csproj", "{F2FCB705-3B0C-4C0B-9DC3-DBAD632CB77F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{26740856-6948-478F-BB3E-C952DE41FABF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26740856-6948-478F-BB3E-C952DE41FABF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26740856-6948-478F-BB3E-C952DE41FABF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26740856-6948-478F-BB3E-C952DE41FABF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2FCB705-3B0C-4C0B-9DC3-DBAD632CB77F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2FCB705-3B0C-4C0B-9DC3-DBAD632CB77F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2FCB705-3B0C-4C0B-9DC3-DBAD632CB77F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2FCB705-3B0C-4C0B-9DC3-DBAD632CB77F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {383789B1-FDAC-4214-824F-1CAD66B835D3}
+	EndGlobalSection
+EndGlobal

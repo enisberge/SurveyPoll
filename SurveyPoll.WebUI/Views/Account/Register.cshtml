@@ -1,0 +1,158 @@
+﻿@model UserCreateViewModel
+@{
+    ViewData["Title"] = "Kayıt Ol";
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    @await Html.PartialAsync("/Views/Shared/HeadPartial.cshtml")
+    <style>
+        .field-error {
+            color: #dc3545; /* Kırmızı renk */
+            font-size: 0.875rem; /* Küçük bir font boyutu */
+        }
+
+        .toast-error {
+            background-color: brown;
+            color: white;
+        }
+
+        .toast-success {
+            background-color: darkgreen;
+            color: white;
+        }   
+    </style>
+</head>
+
+<body class="bg-gradient-primary">
+    <div class="container">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row">
+                    <div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
+                    <div class="col-lg-7">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Hesap Oluştur !</h1>
+                            </div>
+                            <form id="createUserForm">
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-sm-0">
+                                        <input type="text" class="form-control form-control-user" id="firstname"
+                                               placeholder="Ad">
+                                        <span class="field-error" id="FirstNameError"></span>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control form-control-user" id="lastname"
+                                               placeholder="Soyad">
+                                        <span class="field-error" id="LastNameError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" class="form-control form-control-user" id="email"
+                                           placeholder="E-posta">
+                                    <span class="field-error" id="EmailError"></span>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-sm-0">
+                                        <input id="password" type="password" class="form-control form-control-user" placeholder="Parola">
+                                        <span class="field-error" id="PasswordError"></span>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input id="confirmPassword" type="password" class="form-control form-control-user" placeholder="Parola tekrar">
+                                        <span class="field-error" id="ConfirmPasswordError"></span>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-user btn-block">
+                                    <i class="far fa-save"></i> Kaydol
+                                </button>
+                            </form>
+                            <hr>
+                            <a href="index.html" class="btn btn-success btn-user btn-block">
+                                <i class="fas fa-poll-h"></i> Anket Oluştur
+                            </a>
+                            <a href="index.html" class="btn btn-facebook btn-user btn-block">
+                                <i class="fab fa-facebook-f fa-fw"></i> Register with Facebook
+                            </a>
+                            <hr>
+                            <div class="text-center">
+                                <a class="small" href="forgot-password.html">Forgot Password?</a>
+                            </div>
+                            <div class="text-center">
+                                <a class="small" href="login.html">Already have an account? Login!</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    @await Html.PartialAsync("/Views/Shared/ScriptPartial.cshtml")
+    <script type="text/javascript">
+        $(function () {
+            $('#createUserForm').submit(function (e) {
+                e.preventDefault(); // Formun normal gönderimini engelle
+
+                // Form verilerini al
+                var formData = {
+                    FirstName: $('#firstname').val(),
+                    LastName: $('#lastname').val(),
+                    Email: $('#email').val(),
+                    Password: $('#password').val(),
+                    ConfirmPassword: $('#confirmPassword').val()
+
+
+                    // Diğer alanları da ekleyebilirsiniz
+                };
+
+                $.ajax({
+                    url: '/Account/CreateUser', // Eylemin yolunu belirtin
+                    type: 'POST',
+                    data: formData, // Form verilerini gönderin
+                    success: function (response) {
+                        if (response.isValid) {
+                            Swal.fire({
+                                title: "Kullanıcı Kaydı Başarılı !",
+                                text: response.message,
+                                icon: "success",
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(function () {
+                                // 5 saniye sonra login sayfasına yönlendirme yapabilirsiniz
+                                window.location.href = "/Account/Login"; // Yönlendirme yapılacak sayfanın URL'si
+                            });
+
+                        } else {
+                            $.each(response.errors, function (key, values) {
+                                // Hata mesajlarını ilgili input alanlarının altına ekleyin
+                                $('#' + key + 'Error').html('<ul>' + values.map(function (value) {
+                                    return '<li>' + value + '</li>';
+                                }).join('') + '</ul>');
+                            });
+                        }
+                    },
+                    error: function () {
+                        // AJAX isteği başarısız ise burada işlem yapabilirsiniz
+                        toastr.error('Kullanıcı oluşturulurken bir hata oluştu.');
+                    }
+                });
+            });
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>

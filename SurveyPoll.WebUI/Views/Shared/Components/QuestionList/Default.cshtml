@@ -1,0 +1,23 @@
+﻿@using X.PagedList.Mvc.Core;
+@model X.PagedList.IPagedList<QuestionWithOptionsViewModel>
+
+
+<div class="container">
+    <div class="row">
+        @foreach (var question in Model)
+        {
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@question.QuestionText</h5>
+                        <p class="card-text">@question.CreatedDate</p>
+                        <!-- Diğer kart içeriği -->
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="pagination-container">
+    @Html.PagedListPager(Model, page => Url.Action("Create", new { page, pageSize = Model.PageSize }))
+</div>

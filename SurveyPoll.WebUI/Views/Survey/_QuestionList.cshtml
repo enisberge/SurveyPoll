@@ -1,0 +1,39 @@
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@model X.PagedList.IPagedList<QuestionWithOptionsViewModel>
+@section Styles{
+    <link href="~/AdminTemplate/css/PagedList.css" rel="stylesheet" />
+}
+<div class="row col-md-12">
+
+    @foreach (var question in Model)
+    {
+        <div class="col-md-4">
+            <div class="card mb-4 border-bottom-danger">
+                <div class="card-header p-2">
+                    <a class="btn btn-outline-success btn-sm float-right btnAddQuestion" question-id="@question.Id"><i class="fas fa-check"></i>&nbsp; Ekle</a>
+                    <a class="btn btn-outline-danger btn-sm float-right btnRemoveQuestion" style="display:none" question-id="@question.Id"><i class="fas fa-trash"></i>&nbsp; Çıkar</a>
+                </div>
+                <div class="card-body p-3">
+                    <h7 style="font-weight:bold">@question.QuestionText</h7>
+
+                    <ul class="pl-1 mt-2">
+                        @foreach (var option in question.QuestionOptions)
+                        {
+
+                            <li style="font-size:14px; list-style: none; ">
+                                <input type="radio" name="question-@question.Id" value="@option.Id" id="option-@option.Id">
+                                <label for="option-@option.Id">@option.OptionText</label>
+                            </li>
+                        }
+                    </ul>
+                    <!-- Diğer kart içeriği -->
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="text-center col-md-12">
+    @Html.PagedListPager(Model, page => Url.Action("GetQuestion", new { page }), new PagedListRenderOptions { DisplayLinkToFirstPage = PagedListDisplayMode.Always })
+</div>

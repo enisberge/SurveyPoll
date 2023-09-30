@@ -1,0 +1,310 @@
+﻿@{
+    ViewData["Title"] = "Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles{
+    <style>
+        .field-error {
+            color: #dc3545; /* Kırmızı renk */
+            font-size: 0.875rem; /* Küçük bir font boyutu */
+        }
+    </style>
+}
+@section Scripts{
+    <script type="text/javascript">
+        var recordtable;
+        $(function () {
+            $("#categoryTable tbody").on("click", "a#btnRemove", function () {
+                var id = parseInt($(this).attr("remove-id"));
+                Swal.fire({
+                    title: 'Silmek istediğinize emin misiniz?',
+                    text: 'Bu işlem geri alınamaz!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Evet',
+                    cancelButtonText: 'İptal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Evet'e tıklanırsa AJAX ile silme işlemini gerçekleştir
+                        $.ajax({
+                            url: '/Question/DeleteCategory/' + id, // Silme işlemi için uygun URL'yi belirtin
+                            type: 'PUT',
+                            data: { id: id },
+                            success: function (data) {
+                                if (data.isSuccess) {
+                                    // Silme işlemi başarılı olduğunda SweetAlert ile bilgilendirme yapabilirsiniz
+                                    Swal.fire(
+                                        'Silindi!',
+                                        'Kayıt başarıyla silindi.',
+                                        'success'
+                                    ).then(function () {
+                                        // Silme işlemi sonrası sayfayı yenileyebilirsiniz veya başka bir işlem yapabilirsiniz
+                                        recordtable.ajax.reload();
+                                    });
+                                } else {
+                                    // Silme işlemi başarısız olduğunda SweetAlert ile hata mesajı gösterebilirsiniz
+                                    Swal.fire(
+                                        'Hata!',
+                                        'Silme işlemi sırasında bir hata oluştu.',
+                                        'error'
+                                    );
+                                }
+                            },
+                            error: function (error) {
+                                // AJAX hatası durumunda hata mesajını gösterebilirsiniz
+                                console.error(error);
+                            }
+                        });
+                    }
+                });
+            });
+
+
+
+            $("#categoryTable tbody").on("click", "a#btnEdit", function () {
+                var id = parseInt($(this).attr("data-id"));
+                $('#editCategoryModal').modal('show');
+
+                $.ajax({
+                    url: '/Question/GetCategoryById/' + id,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (result) {
+
+                        $("#editCategoryName").val(result.name);
+                    },
+                    error: function (error) {
+                        // Hata durumunun işlenmesi
+                        console.error(error);
+                    }
+                });
+                $('#editCategoryForm').submit(function (e) {
+
+                    e.preventDefault(); // Formun normal gönderimini engelle
+                    var Name = $("#editCategoryName").val();
+                    var Id = id;
+                    var formData = { Name, Id };
+                    $.ajax({
+                        type: 'PUT',
+                        url: "/Question/UpdateCategory", // Controller ve Action adınıza göre ayarlayın
+                        data: formData,
+                        success: function (result) {
+                            // Başarılı bir şekilde sonuç alındığında yapılacak işlemler
+                            if (result.isValid) {
+                                if (result.isSuccess) {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Başarılı",
+                                        text: result.message,
+                                    }).then(function () {
+                                        // Başarılı mesaj gösterildikten sonra yönlendirme yapabilirsiniz
+                                        $("#editCategoryModal").find('form')[0].reset(); // Eğer bir form varsa
+                                        // Modalı gizleme
+                                        $("#editCategoryModal").modal('hide');
+                                        recordtable.ajax.reload();
+                                    });
+                                } else {
+                                    toastr.error(result.message);
+                                }
+                            } else {
+                                $.each(result.errors, function (key, values) {
+                                    // Hata mesajlarını ilgili input alanlarının altına ekleyin
+                                    $('.' + key + 'Error').html('<ul>' + values.map(function (value) {
+                                        return '<li>' + value + '</li>';
+                                    }).join('') + '</ul>');
+                                });
+                            }
+                        },
+                        error: function () {
+                            // Hata durumunda yapılacak işlemler
+                            toastr.error("Hata : Talep oluşturma işlemi başarısız !");
+                        }
+                    });
+                });
+            });
+
+
+            //$('#editCategoryModal').on('shown.bs.modal', function () {
+         
+            
+            //});
+
+            $("#btnNew").click(function () {
+                $("#NameError").text('');
+                $("#addCategoryModal").find('form')[0].reset();
+                $('#addCategoryModal').modal('show');
+
+                $('#createCategoryForm').submit(function (e) {
+                    e.preventDefault(); // Formun normal gönderimini engelle
+                    var Name = $("#categoryName").val();
+
+                    var formData = { Name };
+                    $.ajax({
+                        type: "POST",
+                        url: "/Question/AddCategory", // Controller ve Action adınıza göre ayarlayın
+                        data: formData,
+                        success: function (result) {
+                            // Başarılı bir şekilde sonuç alındığında yapılacak işlemler
+                            if (result.isValid) {
+                                if (result.isSuccess) {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Başarılı",
+                                        text: result.message,
+                                    }).then(function () {
+                                        // Başarılı mesaj gösterildikten sonra yönlendirme yapabilirsiniz
+                                        $("#addCategoryModal").find('form')[0].reset(); // Eğer bir form varsa
+                                        // Modalı gizleme
+                                        $("#addCategoryModal").modal('hide');
+                                        recordtable.ajax.reload();
+                                    });
+                                } else {
+                                    toastr.error(result.message);
+                                }
+                            } else {
+                                $.each(result.errors, function (key, values) {
+                                    // Hata mesajlarını ilgili input alanlarının altına ekleyin
+                                    $('#' + key + 'Error').html('<ul>' + values.map(function (value) {
+                                        return '<li>' + value + '</li>';
+                                    }).join('') + '</ul>');
+                                });
+                            }
+                        },
+                        error: function () {
+                            // Hata durumunda yapılacak işlemler
+                            toastr.error("Hata : Talep oluşturma işlemi başarısız !");
+                        }
+                    });
+                });
+
+
+            });
+
+            recordtable = $('#categoryTable').DataTable({
+                language: {
+                    url: '../lib/language/tr.json',
+                },
+                "ajax": {
+                    "url": "/Question/GetCategories", // Veri çekmek için kullanacağınız URL
+                    "type": "GET", // HTTP isteği türü (GET veya POST)
+                    "dataSrc": "" // Verilerinizi içeren JSON nesnesinin kökü (eğer JSON veri dizisi içinde ise boş bırakabilirsiniz)
+                },
+                "columns": [
+                    { "data": "name" },
+                    {
+                        "data": "createdDate", className: "text-center", render: function (data, type, row) {
+                            if (data != null && data != "")
+                                return moment(data).format("DD.MM.YYYY");
+                            else
+                                return "";
+                        }
+                    },
+                    {
+                        "data": "id", className: "text-center text-nowrap", render: function (data, type, row) {
+                            return "<a href='javascript:;' class='btn btn-warning btn-icon-split btn-sm' data-toggle='tooltip'data-id='" + data + "' id='btnEdit' data-placement='left' title='Düzenle'><span class='icon text-white-50' ><i class='fas fa-info-circle'></i></span><span class='text' > Düzenle </span></a>&nbsp;<a href='javascript:;' class='btn btn-danger btn-icon-split btn-sm' data-toggle='tooltip'remove-id='" + data + "' id='btnRemove' data-placement='left' title='Sil'><span class='icon text-white-50' ><i class='fas fa-trash'></i></span><span class='text' > Sil </span></a>";
+                        }
+                    }
+
+                ]
+            });
+
+
+        });
+
+
+    </script>
+
+}
+<div class="col-lg-12">
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+
+            <div class="row">
+                <div class="col-md-8">
+                    <h6 class="card-title mb-0 text-primary">Kategoriler</h6>
+                </div>
+                <div class="col-md-4">
+                    <a class="btn btn-primary btn-sm float-right" id="btnNew"> Kategori Ekle</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="categoryTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Kategori Adı</th>
+                            <th>Oluşturma Tarihi</th>
+                            <th>İşlemler</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addCategoryModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Yeni Kategori</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="createCategoryForm">
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label for="categoryName" class="col-sm-2 col-form-label">Ad</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="categoryName">
+                                <span class="field-error NameError" ></span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger btnClose" data-dismiss="modal">Kapat</button>
+                        <button type="submit" class="btn btn-success">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editCategoryModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Kategori Düzenle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="editCategoryForm">
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label for="editCategoryName" class="col-sm-2 col-form-label">Ad</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="editCategoryName">
+                                <span class="field-error NameError"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                        <button type="submit" class="btn btn-success">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- Modal -->
