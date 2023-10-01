@@ -1,10 +1,9 @@
 ﻿namespace SurveyPoll.WebUI.Models
 {
-    public class QuestionOptionViewModel
+    public class AddQuestionOptionViewModel
     {
-        public int Id { get; set; }
         public string OptionText { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }=DateTime.Now;
         public int QuestionId { get; set; }
     }
 }

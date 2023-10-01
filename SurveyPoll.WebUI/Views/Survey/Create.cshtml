@@ -16,6 +16,10 @@
 </div>*@
 @section Styles{
     <style>
+        a.disabled {
+            pointer-events: none;
+            cursor: default;
+        }
 
         .alert-success.new {
             background: none;
@@ -35,7 +39,7 @@
         }
 
             .alert-success.new2.p-4 {
-                padding: 0.75rem 0.75rem !important;
+                padding: 0.55rem 0.55rem !important;
             }
 
             .alert-success.new2 .fa {
@@ -43,11 +47,11 @@
                 display: table-cell;
                 text-align: center;
                 vertical-align: middle;
-                font-size: 40px;
+                font-size: 30px;
             }
 
         .alert-success .alert-body {
-            padding-left: 0.75rem;
+            padding-left: 0.55rem;
             display: table-cell;
             color: rgba(0,0,0,0.5);
         }
@@ -77,204 +81,98 @@
             <h6 class="card-title mb-0 text-primary">Anket Oluştur</h6>
         </div>
         <div class="card-body">
-            <div id="basic-pills-wizard" class="twitter-bs-wizard">
-                <ul class="twitter-bs-wizard-nav">
-                    <li class="nav-item">
-                        <a href="#seller-details" class="nav-link" data-toggle="tab">
-                            <div class="step-icon" data-bs-toggle="tooltip" data-bs-placement="top"
-                                 title="Seller Details">
-                                <i class="far fa-user"></i>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#company-document" class="nav-link" data-toggle="tab">
-                            <div class="step-icon" data-bs-toggle="tooltip" data-bs-placement="top"
-                                 title="Company Document">
-                                <i class="fas fa-question"></i>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#bank-detail" class="nav-link" data-toggle="tab">
-                            <div class="step-icon" data-bs-toggle="tooltip" data-bs-placement="top"
-                                 title="Bank Details">
-                                <i class="fas fa-share-square"></i>
-                            </div>
-                        </a>
-                    </li>
-                </ul>
+            <div class="container">
 
-                <div class="tab-content twitter-bs-wizard-tab-content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="progress progress-sm mb-3">
+                            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <form id="formWizard">
+                            <!-- Adım 1 -->
+                            <div class="form-step" id="step1">
+                                <div class="alert alert-success new2 p-4">
+                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                    <div class="alert-body">
+                                        <h6 class="alert-header">Bilgilendirme</h6>
+                                        <ul>
+                                            <li>
+                                                Üye olmayan kullanıcılar en fazla 4 soruluk anket oluşturabilirler.
+                                            </li>
+                                            <li>
+                                                Üye olmayan kullanıcılar oluşturdukları anketi en fazla 5 kişiyle paylaşabilirler.
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <h5>Anket Bilgileri <i class="fas fa-user"></i></h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="firstname"
+                                                   class="form-label">Ad</label>
+                                            <input type="text" class="form-control"
+                                                   id="firstname">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="lastname"
+                                                   class="form-label">Soyad</label>
+                                            <input type="text" class="form-control"
+                                                   id="lastname">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label for="title"
+                                                   class="form-label">Anket Başlığı</label>
+                                            <input type="text" class="form-control"
+                                                   id="title">
+                                        </div>
+                                    </div>
+                                </div>
 
+                                <button class="btn btn-primary next-step" id="questionPage">Sonraki</button>
+                            </div>
 
-                    <div class="tab-pane" id="seller-details">
-                        <div class="container">
-                            <div class="alert alert-success new2 p-4">
-                                <i class="fa fa-info-circle" aria-hidden="true"></i>
-                                <div class="alert-body">
-                                    <h6 class="alert-header">Bilgilendirme</h6>
-                                    <ul>
-                                        <li>
-                                            Üye olmayan kullanıcılar en fazla 4 soruluk anket oluşturabilirler.
-                                        </li>
-                                        <li>
-                                            Üye olmayan kullanıcılar oluşturdukları anketi en fazla 5 kişiyle paylaşabilirler.
-                                        </li>
+                            <!-- Adım 2 -->
+                            <div class="form-step" id="step2">
+                                <div class="alert alert-success new2 p-4 position-fixed fixed-bottom" style="height:70px">
+                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                    <div class="alert-body">
+                                        <h6 class="alert-header">Bilgilendirme</h6>
+                                        <ul>
+                                            <li>
+                                                Eklenen soru sayısı: <span id="questionCount"></span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <h5>Sorular <i class="fas fa-question"></i></h5>
+                                <div class="row" id="QuestionListContainer">
+                                </div>
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination">
                                     </ul>
-                                </div>
+                                </nav>
+                                <button class="btn btn-primary prev-step">Önceki</button>
+                                <button class="btn btn-success next-step float-right" id="btnSave">Kaydet</button>
                             </div>
-                        </div>
-                        <div class="mb-4">
-                            <h5>Anket Bilgilerini girin</h5>
-                        </div>
-                        <form>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="basicpill-firstname-input"
-                                               class="form-label">Ad</label>
-                                        <input type="text" class="form-control"
-                                               id="basicpill-firstname-input">
-                                    </div>
+
+                            <!-- Adım 3 -->
+                            <div class="form-step" id="step3">
+                                <h2>Adım 3 <i class="fas fa-check"></i></h2>
+                                <div class="form-group">
+                                    <label for="field3">Alan 3:</label>
+                                    <input type="text" class="form-control" id="field3" name="field3" required>
                                 </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="basicpill-lastname-input"
-                                               class="form-label">Soyad</label>
-                                        <input type="text" class="form-control"
-                                               id="basicpill-lastname-input">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <label for="basicpill-phoneno-input"
-                                               class="form-label">Anket Başlığı</label>
-                                        <input type="text" class="form-control"
-                                               id="basicpill-phoneno-input">
-                                    </div>
-                                </div>
+                                <button class="btn btn-primary prev-step">Önceki</button>
+                                <button type="submit" class="btn btn-success">Gönder</button>
                             </div>
                         </form>
-                        <ul class="pager wizard twitter-bs-wizard-pager-link">
-                            <li class="next">
-                                <a href="javascript: void(0);" class="btn btn-primary"
-                                   onclick="nextTab()">
-                                    İleri <i class="bx bx-chevron-right ms-1"></i>
-                                </a>
-                            </li>
-                        </ul>
                     </div>
-
-                    <div class="tab-pane" id="company-document">
-                        <div>
-                            <div class="mb-4">
-                                <h5>Sorular</h5>
-                            </div>
-                            <div class="row" id="QuestionListContainer">
-                            </div>
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination">
-                                </ul>
-                            </nav>
-                            <ul class="pager wizard twitter-bs-wizard-pager-link">
-                                <li class="previous">
-                                    <a href="javascript: void(0);"
-                                       class="btn btn-primary" onclick="nextTab()">
-                                        <i class="bx bx-chevron-left me-1"></i> Geri
-                                    </a>
-                                </li>
-                                <li class="next">
-                                    <a href="javascript: void(0);"
-                                       class="btn btn-primary" onclick="nextTab()">
-                                        İleri <i class="bx bx-chevron-right ms-1"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane" id="bank-detail">
-                        <div>
-                            <div class="mb-4">
-                                <h5>Payment Details</h5>
-                            </div>
-                            <form>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            <label for="basicpill-namecard-input"
-                                                   class="form-label">Name on Card</label>
-                                            <input type="text" class="form-control"
-                                                   id="basicpill-namecard-input">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Credit Card Type</label>
-                                            <select class="form-select">
-                                                <option selected>Select Card Type</option>
-                                                <option value="AE">American Express</option>
-                                                <option value="VI">Visa</option>
-                                                <option value="MC">MasterCard</option>
-                                                <option value="DI">Discover</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            <label for="basicpill-cardno-input"
-                                                   class="form-label">Credit Card Number</label>
-                                            <input type="text" class="form-control"
-                                                   id="basicpill-cardno-input">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            <label for="basicpill-card-verification-input"
-                                                   class="form-label">Card Verification Number</label>
-                                            <input type="text" class="form-control"
-                                                   id="basicpill-card-verification-input">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            <label for="basicpill-expiration-input"
-                                                   class="form-label">Expiration Date</label>
-                                            <input type="text" class="form-control"
-                                                   id="basicpill-expiration-input">
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <ul class="pager wizard twitter-bs-wizard-pager-link">
-                                <li class="previous">
-                                    <a href="javascript: void(0);"
-                                       class="btn btn-primary" onclick="nextTab()">
-                                        <i class="bx bx-chevron-left me-1"></i> Geri
-                                    </a>
-                                </li>
-                                <li class="float-end">
-                                    <a href="javascript: void(0);"
-                                       class="btn btn-primary" data-bs-toggle="modal"
-                                       data-bs-target=".confirmModal">
-                                        Save
-                                        Changes
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
                 </div>
-
             </div>
         </div>
 
@@ -284,7 +182,14 @@
 
 @section Scripts{
     <script type="text/javascript">
-        var surveyData = {};
+        var surveyData = {
+            Questions: [],
+            FirstName: "",
+            LastName: "",
+            Title: ""
+        };
+
+        var questionCount = 0;
         function toggleButtons(questionId) {
             var removeButton = $(".btnRemoveQuestion[question-id='" + questionId + "']");
             var addButton = $(".btnAddQuestion[question-id='" + questionId + "']");
@@ -300,7 +205,58 @@
             }
         }
         $(document).ready(function () {
-        
+
+            $("#btnSave").click(function () {
+                if (questionCount == 0) {
+                    toastr.error("Lütfen soru seçiniz !");
+                    return false;
+                }
+                surveyData.FirstName = $("#firstname").val();
+                surveyData.LastName = $("#lastname").val();
+                surveyData.Title = $("#title").val();
+
+                console.log(surveyData);
+
+                $.ajax({
+                    url: '/Survey/AddSurvey', // POST işlemini yapmak istediğiniz controller ve action'ın yolu
+                    type: 'POST',
+                    contentType: 'application/json', // Veri türü JSON
+                    data: JSON.stringify(surveyData), // Göndermek istediğiniz veriyi JSON'a dönüştürün
+                    success: function (result) {
+                        // İşlem başarılı olduysa burada gerekli işlemleri yapabilirsiniz
+                        // Örneğin, bir mesaj göstermek veya başka bir sayfaya yönlendirmek
+                    },
+                    error: function (error) {
+                        // İşlem sırasında hata oluştuysa burada gerekli işlemleri yapabilirsiniz
+                    }
+                });
+
+
+            });
+
+            $("#questionPage").click(function () {
+
+                if ($("#firstname").val().trim() == "") {
+                    toastr.error("Ad bilgisi boş geçilemez !");
+                    return false;
+                }
+                if ($("#lastname").val().trim() == "") {
+                    toastr.error("Soyad bilgisi boş geçilemez !");
+                    return false;
+                }
+                if ($("#title").val().trim() == "") {
+                    toastr.error("Anket başlığı bilgisi boş geçilemez !");
+                    return false;
+                }
+
+                toastr.success("Başarılı!");
+
+            });
+
+
+
+            questionCount = surveyData.Questions.length;
+            $("#questionCount").text(questionCount);
             getQuestionData(1);
 
             var cardsContainer = $('.card');
@@ -315,24 +271,41 @@
                     toastr.error("Şıklardan birini seçmeden soru ekleyemezsiniz !");
                     return false;
                 }
+
                 var selectedOptionValue = selectedOption.val(); // Seçilen radio butonunun value'sini alın
 
-                // JSON objesine veriyi ekle
-                surveyData[questionId] =parseInt(selectedOptionValue);
+                // Soru ve cevap nesnesini oluşturun
+                var questionAnswer = {
+                    "QuestionId": parseInt(questionId),
+                    "QuestionOptionId": parseInt(selectedOptionValue)
+                };
+
+                // Soru ve cevabı JSON nesnesine ekleyin
+                surveyData.Questions.push(questionAnswer);
+                console.log(surveyData);
                 toggleButtons(questionId);
+                questionCount = surveyData.Questions.length;
+
+
+                $("#questionCount").text(questionCount);
                 toastr.success("Soru eklendi.");
             });
             cardsContainer.on('click', '.btnRemoveQuestion', function () {
                 var questionIdToRemove = $(this).attr("question-id"); // Silinecek sorunun ID'sini al
-                if (surveyData.hasOwnProperty(questionIdToRemove)) {
-                    delete surveyData[questionIdToRemove]; // Soruyu surveyData objesinden sil
-                    $("input[type='radio'][name='question-" + questionIdToRemove + "']").prop("checked", false);
-                    toggleButtons(questionIdToRemove);
-                    toastr.success("Soru Çıkarıldı.");
+                for (var i = 0; i < surveyData.Questions.length; i++) {
+                    if (surveyData.Questions[i].QuestionId == questionIdToRemove) {
+                        surveyData.Questions.splice(i, 1);
+                        break; // Soruyu bulduk, döngüyü sonlandırabiliriz
+                    }
                 }
 
-                // İlgili soru ve seçenekleri sildikten sonra başka bir işlem yapabilirsiniz
-                // Örneğin, sileme işlemini kullanıcı arayüzünde gösterme gibi.
+                // İlgili soruyu HTML'den de kaldırın (örneğin, seçili radio butonu temizleyin)
+                $("input[type='radio'][name='question-" + questionIdToRemove + "']").prop("checked", false);
+                toggleButtons(questionIdToRemove);
+                questionCount = surveyData.Questions.length;
+                console.log(surveyData);
+                $("#questionCount").text(questionCount);
+                toastr.success("Soru Çıkarıldı.");
             });
 
             // Sayfa numaralarına tıklandığında ilgili sayfadaki verileri al
@@ -378,13 +351,19 @@
 
                         questionListContainer.append(htmlContent);
 
-                        $.each(surveyData, function (questionId, optionId) {
+                        $.each(surveyData.Questions, function (index, question) {
+                            var questionId = question.QuestionId;
+                            var optionId = question.QuestionOptionId;
+
+                            // Soru ve seçeneğin seçiciyi oluşturun
                             var selector = 'input[type="radio"][name="question-' + questionId + '"][value="' + optionId + '"]';
 
                             // Eğer bu seçici ile eşleşen bir radio düğmesi varsa, seçili yap
                             if ($(selector).length > 0) {
                                 $(selector).prop('checked', true);
                             }
+
+                            // İlgili "Soru Çıkar" ve "Soru Ekle" düğmelerini göster/gizle
                             var removeButton = $(".btnRemoveQuestion[question-id='" + questionId + "']");
                             var addButton = $(".btnAddQuestion[question-id='" + questionId + "']");
 
@@ -393,7 +372,7 @@
                         });
 
 
-                        
+
                     });
 
                     var totalPages = result.totalPages;

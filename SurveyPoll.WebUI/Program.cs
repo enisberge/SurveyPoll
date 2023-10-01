@@ -17,8 +17,8 @@ builder.Services.AddCors(options =>
 });
 //servisleri container'a bu 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<CategoryRepository>();
 builder.Services.AddScoped<QuestionRepository>();
+builder.Services.AddScoped<QuestionOptionRepository>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<Context>();
 builder.Services.AddIdentity<AppUser, AppRole>(

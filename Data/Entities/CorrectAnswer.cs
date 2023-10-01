@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace SurveryPoll.DataAccess.Entities
 {
-    public class QuestionOption
+    public class CorrectAnswer
     {
         public int Id { get; set; }
-        public string OptionText { get; set;}
-        public DateTime CreatedDate { get; set; }
         public int QuestionId { get; set; }
-        public Question Question { get; set; }
+        public int QuestionOptionId { get; set; }
+        public int SurveyId { get; set; }
     }
 }

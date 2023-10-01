@@ -1,0 +1,273 @@
+﻿@{
+    ViewData["Title"] = "Sorular";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles{
+    <style>
+        a.disabled {
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .alert-success.new {
+            background: none;
+            border: none;
+            border-left: 4px solid green;
+            border-radius: 0;
+            background: #fff;
+            box-shadow: 1px 1px 4px rgba(0, 0, 0, .2);
+        }
+
+        .alert-success.new2 {
+            background: #f3f8f3;
+            border: none;
+            border-left: 4px solid #45D298;
+            border-radius: 0;
+            box-shadow: 1px 1px 4px rgba(0, 0, 0, .2);
+        }
+
+            .alert-success.new2.p-4 {
+                padding: 0.55rem 0.55rem !important;
+            }
+
+            .alert-success.new2 .fa {
+                color: #45D298;
+                display: table-cell;
+                text-align: center;
+                vertical-align: middle;
+                font-size: 30px;
+            }
+
+        .alert-success .alert-body {
+            padding-left: 0.55rem;
+            display: table-cell;
+            color: rgba(0,0,0,0.5);
+        }
+
+        .alert-success .alert-header {
+            font-weight: 700;
+            color: #45D298;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toast-error {
+            background-color: brown;
+            color: white;
+        }
+
+        .toast-success {
+            background-color: darkgreen;
+            color: white;
+        }
+    </style>
+
+}
+<div class="col-lg-12">
+    <div class="card shadow">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-8">
+                    <h6 class="card-title mb-0 text-primary">Sorular</h6>
+                </div>
+                <div class="col-md-4">
+                    <a class="btn btn-primary btn-sm float-right" id="btnNew">Soru Ekle</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container">
+                <div class="row" id="QuestionListContainer">
+                </div>
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal fade" id="addQuestionModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Soru Ekle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="addQuestionForm">
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label for="title" class="col-sm-2 col-form-label">Soru</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" id="title" rows="3"></textarea>
+                                <span class="field-error NameError"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <p class="text-center">Seçenekler</p>
+                        </div>
+                        <div id="optionarea">
+                            <div class="form-group row">
+                                <label for="optionA" class="col-sm-2 col-form-label">A)</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="optionA" name="optionA" required>
+                                    <span class="field-error NameError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="optionB" class="col-sm-2 col-form-label">B)</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="optionB" name="optionB" required>
+                                    <span class="field-error NameError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="optionC" class="col-sm-2 col-form-label">C)</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="optionC" name="optionC" required>
+                                    <span class="field-error NameError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="optionD" class="col-sm-2 col-form-label">D)</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="optionD" name="optionD" required>
+                                    <span class="field-error NameError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="optionE" class="col-sm-2 col-form-label">E)</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="optionE" name="optionE" required>
+                                    <span class="field-error NameError"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                        <button type="submit" class="btn btn-success">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+            getQuestionData(1);
+            $("#btnNew").click(function () {
+              
+                $('#addQuestionModal').modal('show');
+                var optionValues = {};
+                var questionOptions=[];
+                $('#addQuestionForm').submit(function (e) {
+                    e.preventDefault(); // Formun normal gönderimini engelle
+                    var questionText = $("#title").val();
+
+                    // Her bir input alanını temsil eden JSON nesnelerini questionOptions dizisine ekleyin
+                    $("#optionarea input").each(function (index, input) {
+                        var inputValue = $(input).val();
+
+                        // Her bir input alanının değerini bir JSON nesnesi olarak oluşturun
+                        var option = {
+                            OptionText: inputValue // Input değeri OptionText'e atanıyor
+                        };
+
+                        // Oluşturulan JSON nesnesini questionOptions dizisine ekleyin
+                        questionOptions.push(option);
+                    });
+
+                    var data = {
+                        QuestionText: questionText,
+                        QuestionOptions: questionOptions
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/Question/AddQuestion",
+                        data: data,
+                        success: function (response) {
+                            console.log(response); // Başarılı yanıtı işleyin
+                        },
+                        error: function (error) {
+                            console.error(error); // Hata durumunu işleyin
+                        }
+                    });
+                });
+              
+
+            })
+            // Sayfa numaralarına tıklandığında ilgili sayfadaki verileri al
+            $('.pagination').on('click', '.sayfa', function () {
+                var sayfaNo = $(this).data('sayfano');
+                getQuestionData(sayfaNo);
+            });
+        });
+        function getQuestionData(page) {
+            var pageSize = 6;
+            $.ajax({
+                url: '/Question/GetQuestion',
+                type: 'GET',
+                data: { SayfaNo: page, pageSize: pageSize }, // Sayfa numarasını ve sayfa boyutunu gönder
+                success: function (result) {
+                    var questionListContainer = $('#QuestionListContainer');
+                    questionListContainer.empty();
+                    var htmlContent = "";
+                    $.each(result.data, function (index, question) {
+                        var htmlContent = "<div class='col-md-4'>" +
+                            "<div class='card mb-4 border-bottom-danger'>" +
+                            "<div class='card-header p-2'>" +
+                            "<a class='btn btn-outline-success btn-sm float-right btnAddQuestion' question-id='" + question.id + "'><i class='fas fa-check'></i>&nbsp; Ekle</a>" +
+                            "<a class='btn btn-outline-danger btn-sm float-right btnRemoveQuestion' style='display:none' question-id='" + question.id + "'><i class='fas fa-check'></i>&nbsp; Çıkar</a>" +
+                            "</div>" +
+                            "<div class='card-body p-3'>" +
+                            "<h7 style='font-weight:bold'>" + question.questionText + "</h7>" +
+                            "<ul class='pl-1 mt-2'>";
+
+                        $.each(question.questionOptions, function (index, option) {
+                            htmlContent += "<li style='font-size:14px; list-style: none;'>" +
+                                "<input type='radio' name='question-" + question.id + "' value='" + option.id + "' id='option-" + option.id + "'>&nbsp;" +
+                                "<label for='option-" + option.id + "'>" + option.optionText + "</label>" +
+                                "</li>";
+
+
+                        });
+
+                        htmlContent += "</ul>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>";
+
+                        questionListContainer.append(htmlContent);
+
+
+                    });
+
+                    var totalPages = result.totalPages;
+                    updatePageNumbers(totalPages, page);
+                }
+            });
+        }
+        function updatePageNumbers(totalPages, currentPage) {
+            // Sayfa numaralarını güncelleyin
+            var pagination = $('.pagination');
+            pagination.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var activeClass = (i === currentPage) ? 'active' : '';
+                pagination.append('<li class="page-item"><a href="#" class="sayfa page-link" ' + activeClass + '" data-sayfano="' + i + '">' + i + '</a></li>');
+
+            }
+        }
+
+
+    </script>
+}

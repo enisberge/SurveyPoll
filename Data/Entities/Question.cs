@@ -14,7 +14,6 @@ namespace SurveryPoll.DataAccess.Entities
         public int Status { get; set; }
         public DateTime CreatedDate { get; set; }
         public List<QuestionOption> QuestionOptions { get; set; }
-        public Category Category { get; set; }
-
+        public List<Survey> Surveys { get; set; }
     }
 }

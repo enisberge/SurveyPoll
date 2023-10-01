@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 
 namespace SurveryPoll.DataAccess.Entities
 {
-    public class Category
+    public class Survey
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public bool IsDeleted { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public int? UserId { get; set; }
+        public Guid SurveyCode { get; set; }
+        public string FirstName{ get; set; }
+        public string LastName { get; set; }
+        public string Title { get; set; }
         public List<Question> Questions { get; set; }
+
     }
 }

@@ -23,6 +23,12 @@ namespace SurveryPoll.DataAccess.Repositories
             _context.SaveChanges();
         }
 
+        public void AddRange(IEnumerable<TEntity> entities)
+        {
+            _context.Set<TEntity>().AddRange(entities);
+            _context.SaveChanges();
+        }
+
         public void Delete(TEntity entity)
         {
             _context.Set<TEntity>().Remove(entity);

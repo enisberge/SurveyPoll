@@ -43,6 +43,10 @@ namespace SurveyPoll.WebUI.Controllers
             return Json(new { Data = pageData, TotalPages = totalPages });
 
         }
-
+        [HttpPost]
+        public IActionResult AddSurvey([FromBody] AddSurveyViewModel model)
+        {
+            return View(model);
+        }
     }
 }

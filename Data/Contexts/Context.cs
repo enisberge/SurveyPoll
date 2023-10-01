@@ -15,10 +15,11 @@ namespace SurveryPoll.DataAccess.Contexts
 
       
         public DbSet<AppUser> AppUsers { get; set; }
-        public DbSet<Category> Categories { get; set; }
+        public DbSet<AppRole> AppRoles { get; set; }
         public DbSet<Question>Questions { get; set; }
         public DbSet<QuestionOption>QuestionOptions { get; set; }
-
+        public DbSet<Survey> Surveys{ get; set; }
+        public DbSet<CorrectAnswer>CorrectAnswers { get; set; }
 
 
         //public Context(DbContextOptions<Context> options):base(options) { 
