@@ -21,7 +21,7 @@ namespace SurveyPoll.WebUI.Controllers
         {
             int pageSize = 6;
             var questions = _questionRepository.GetAllQuestionsWithOptions();
-            var questionWithOptions = _mapper.Map<List<QuestionWithOptionsViewModel>>(questions);
+            var questionWithOptions = _mapper.Map<List<QuestionListViewModel>>(questions);
             var pagedQuestions = questionWithOptions.ToPagedList(page, pageSize);
 
             return PartialView("LoadPagedQuestions",pagedQuestions); // _PagedQuestionsPartialView, sayfalamayı görüntüleyeceğiniz kısmın adı olmalıdır

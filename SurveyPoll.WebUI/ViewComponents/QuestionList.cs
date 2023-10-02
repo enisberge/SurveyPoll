@@ -21,7 +21,7 @@ namespace SurveyPoll.WebUI.Components
         {
             var questions = _questionRepository.GetAllQuestionsWithOptions();
 
-            var questionWithOptions = _mapper.Map<List<QuestionWithOptionsViewModel>>(questions);
+            var questionWithOptions = _mapper.Map<List<QuestionListViewModel>>(questions);
 
             var pagedQuestions = questionWithOptions.ToPagedList(page, pageSize);
 

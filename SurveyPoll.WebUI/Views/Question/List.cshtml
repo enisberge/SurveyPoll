@@ -154,20 +154,227 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="editQuestionModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Soru Düzenle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="editQuestionForm">
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label for="title" class="col-sm-2 col-form-label">Soru</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" id="editTitle" rows="3"></textarea>
+                                <span class="field-error NameError"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <p class="text-center">Seçenekler</p>
+                        </div>
+                        <div id="editoptionarea">
+                            <div class="form-group row">
+                                <label for="editOptionA" class="col-sm-2 col-form-label">A)</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="editOptionA" option-id="" name="editOptionA" required>
+                                    <span class="field-error NameError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="editOptionB" class="col-sm-2 col-form-label">B)</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="editOptionB" option-id="" name="editOptionB" required>
+                                    <span class="field-error NameError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="editOptionC" class="col-sm-2 col-form-label">C)</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="editOptionC" option-id="" name="editOptionC" required>
+                                    <span class="field-error NameError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="editOptionD" class="col-sm-2 col-form-label">D)</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="editOptionD" option-id="" name="editOptionD" required>
+                                    <span class="field-error NameError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="editOptionE" class="col-sm-2 col-form-label">E)</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="editOptionE" option-id="" name="editOptionE" required>
+                                    <span class="field-error NameError"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                        <button type="submit" class="btn btn-success">Kaydet</button>
+                        @*<a id="btnEditSave" class="btn btn-success">Kaydet</a>*@
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 
 @section Scripts{
     <script type="text/javascript">
+        var Role = @(User.IsInRole("Admin") ? "true" : "false");
 
 
         $(document).ready(function () {
             getQuestionData(1);
+            var cardsContainer = $(".card");
+            cardsContainer.on('click', '.btnApproveQuestion', function () {
+                alert("selam");
+                var id = parseInt($(this).attr("question-id"));
+                $.ajax({
+                    type: "PUT",
+                    url: "/Question/ApproveQuestion/"+id,
+                    data: data,
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            Swal.fire({
+                                title: 'Başarılı !',
+                                text: response.message,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(function () {
+                                getQuestionData(1);
+                                $("#editQuestionModal").find('form')[0].reset(); 
+                                $("#editQuestionModal").modal('hide');
+                            });
+                        }
+                        else {
+                            // Silme işlemi başarısız olduğunda SweetAlert ile hata mesajı gösterebilirsiniz
+                            Swal.fire({
+                                title: 'Başarısız !',
+                                text: response.message,
+                                icon: 'error',
+                                showCancelButton: true, // Kullanıcıya uyarıyı kapatma seçeneği sunar
+                                cancelButtonText: "Kapat", // Kapatma düğmesinin metni
+                            }).then(function () {
+                                $("#editQuestionModal").find('form')[0].reset(); // Eğer bir form varsa
+                                $("#editQuestionModal").modal('hide');
+                            });
+                        }
+                    },
+                    error: function (error) {
+                        console.error(error); // Hata durumunu işleyin
+                    }
+                });
+
+            });
+            cardsContainer.on('click', '.btnEditQuestion', function () {
+                $('#editQuestionModal').modal('show');
+                var id = parseInt($(this).attr("question-id"));
+                $.ajax({
+                    url: '/Question/GetQuestionById/' + id, // Endpoint URL'si
+                    type: 'GET', // HTTP GET isteği
+                    dataType: 'json', // Gelen veri tipi JSON
+                    success: function (data) {
+                        console.log(data);
+                        $("#editTitle").val(data.questionText);
+                        $("#editOptionA").val(data.questionOptions[0].optionText);
+                        $("#editOptionA").attr("option-id", data.questionOptions[0].id);
+
+                        $("#editOptionB").val(data.questionOptions[1].optionText);
+                        $("#editOptionB").attr("option-id", data.questionOptions[1].id);
+                        $("#editOptionC").val(data.questionOptions[2].optionText);
+                        $("#editOptionC").attr("option-id", data.questionOptions[2].id);
+                        $("#editOptionD").val(data.questionOptions[3].optionText);
+                        $("#editOptionD").attr("option-id", data.questionOptions[3].id);
+                        $("#editOptionE").val(data.questionOptions[4].optionText);
+                        $("#editOptionE").attr("option-id", data.questionOptions[4].id);
+
+                    },
+                    error: function (error) {
+                        // Hata durumunda burası çalışır
+                        console.error('Hata:', error);
+                    }
+                });
+
+                $('#editQuestionForm').submit(function (e) {
+                    e.preventDefault(); // Formun normal gönderimini engelle
+
+                    var questionText = $("#editTitle").val();
+                    var questionOptions = [];
+                    $("#editoptionarea input").each(function (index, input) {
+                        var inputValue = $(input).val();
+                        var optionId = $(input).attr("option-id"); // inputun option-id'sini alın
+
+                        // Her bir input alanının değerini ve option-id'sini bir JSON nesnesi olarak oluşturun
+                        var option = {
+                            Id: optionId, // option-id'yi id olarak atayın
+                            OptionText: inputValue // Input değeri OptionText'e atanıyor
+                        };
+
+                        // Oluşturulan JSON nesnesini questionOptions dizisine ekleyin
+                        questionOptions.push(option);
+                    });
+
+                    var data = {
+                        Id: id,
+                        QuestionText: questionText,
+                        QuestionOptions: questionOptions
+                    };
+                    console.log(data);
+                    $.ajax({
+                        type: "PUT",
+                        url: "/Question/UpdateQuestion",
+                        data: data,
+                        success: function (response) {
+                            if (response.isSuccess) {
+                                // Silme işlemi başarılı olduğunda SweetAlert ile bilgilendirme yapabilirsiniz
+                                Swal.fire({
+                                    title: 'Başarılı !',
+                                    text: response.message,
+                                    icon: 'success',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(function () {
+                                    getQuestionData(1);
+                                    $("#editQuestionModal").find('form')[0].reset(); // Eğer bir form varsa
+                                    // Modalı gizleme
+                                    $("#editQuestionModal").modal('hide');
+                                });
+                            }
+                            else {
+                                // Silme işlemi başarısız olduğunda SweetAlert ile hata mesajı gösterebilirsiniz
+                                Swal.fire({
+                                    title: 'Başarısız !',
+                                    text: response.message,
+                                    icon: 'error',
+                                    showCancelButton: true, // Kullanıcıya uyarıyı kapatma seçeneği sunar
+                                    cancelButtonText: "Kapat", // Kapatma düğmesinin metni
+                                }).then(function () {
+                                    $("#editQuestionModal").find('form')[0].reset(); // Eğer bir form varsa
+                                    $("#editQuestionModal").modal('hide');
+                                });
+                            }
+                        },
+                        error: function (error) {
+                            console.error(error); // Hata durumunu işleyin
+                        }
+                    });
+                });
+            });
+
             $("#btnNew").click(function () {
-              
+
                 $('#addQuestionModal').modal('show');
                 var optionValues = {};
-                var questionOptions=[];
+                var questionOptions = [];
                 $('#addQuestionForm').submit(function (e) {
                     e.preventDefault(); // Formun normal gönderimini engelle
                     var questionText = $("#title").val();
@@ -195,14 +402,41 @@
                         url: "/Question/AddQuestion",
                         data: data,
                         success: function (response) {
-                            console.log(response); // Başarılı yanıtı işleyin
+                            if (response.isSuccess) {
+                                // Silme işlemi başarılı olduğunda SweetAlert ile bilgilendirme yapabilirsiniz
+                                Swal.fire({
+                                    title: 'Başarılı !',
+                                    text: response.message,
+                                    icon: 'success',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(function () {
+                                    getQuestionData(1);
+                                    $("#addQuestionModal").find('form')[0].reset(); // Eğer bir form varsa
+                                    // Modalı gizleme
+                                    $("#addQuestionModal").modal('hide');
+                                });
+                            }
+                            else {
+                                // Silme işlemi başarısız olduğunda SweetAlert ile hata mesajı gösterebilirsiniz
+                                Swal.fire({
+                                    title: 'Başarısız !',
+                                    text: response.message,
+                                    icon: 'error',
+                                    showCancelButton: true, // Kullanıcıya uyarıyı kapatma seçeneği sunar
+                                    cancelButtonText: "Kapat", // Kapatma düğmesinin metni
+                                }).then(function () {
+                                    $("#addQuestionModal").find('form')[0].reset(); // Eğer bir form varsa
+                                    $("#addQuestionModal").modal('hide');
+                                });
+                            }
                         },
                         error: function (error) {
                             console.error(error); // Hata durumunu işleyin
                         }
                     });
                 });
-              
+
 
             })
             // Sayfa numaralarına tıklandığında ilgili sayfadaki verileri al
@@ -223,11 +457,28 @@
                     var htmlContent = "";
                     $.each(result.data, function (index, question) {
                         var htmlContent = "<div class='col-md-4'>" +
-                            "<div class='card mb-4 border-bottom-danger'>" +
-                            "<div class='card-header p-2'>" +
-                            "<a class='btn btn-outline-success btn-sm float-right btnAddQuestion' question-id='" + question.id + "'><i class='fas fa-check'></i>&nbsp; Ekle</a>" +
-                            "<a class='btn btn-outline-danger btn-sm float-right btnRemoveQuestion' style='display:none' question-id='" + question.id + "'><i class='fas fa-check'></i>&nbsp; Çıkar</a>" +
-                            "</div>" +
+                            "<div class='card mb-4 border-bottom-primary'>" +
+                            "<div class='card-header p-2'>";
+                        if (Role) {
+                            htmlContent += "<div class='float-right'>" +
+                                "<a class='btn btn-warning btn-sm btnEditQuestion ml-2' style='color:black; font-size:12px' question-id='" + question.id + "'><i class='far fa-edit'></i>&nbsp; Düzenle</a>" +
+                                "<a class='btn btn-danger btn-sm btnRemoveQuestion ml-2' style='font-size:12px' question-id='" + question.id + "'><i class='fas fa-trash'></i>&nbsp; Sil</a>" +
+                                "</div>";
+                            if (question.status == 1) {
+                                htmlContent += "<div class='float-left'>" +
+                                    "<a class='btn btn-circle btn-primary btn-sm btnApproveQuestion' data-toggle='tooltip' title='Onayla' style='font - size: 12px' question-id='" + question.id + "'><i class='fas fa-check'></i></a>" +
+                                    "</div>" +
+                                    "<div class='float-left'>" +
+                                    "<a class='btn btn-circle btn-secondary btn-sm btnRejectQuestion ml-2' data-toggle='tooltip' title='Reddet' style='font - size: 12px' question-id='" + question.id + "'><i class='fas fa-times'></i></a>" +
+                                    "</div>";
+                            }
+
+                        }
+                        else {
+                            htmlContent += "<div class='col-md-12'>&nbsp;&nbsp;</div>";
+                        }
+
+                        htmlContent += "</div>" +
                             "<div class='card-body p-3'>" +
                             "<h7 style='font-weight:bold'>" + question.questionText + "</h7>" +
                             "<ul class='pl-1 mt-2'>";
@@ -241,8 +492,16 @@
 
                         });
 
-                        htmlContent += "</ul>" +
-                            "</div>" +
+                        htmlContent += "</ul> <div class='row'>";
+                        if (question.status === 1) {
+                            htmlContent += "<div class='col-md-6'><span class='badge badge-warning'> Onay Bekliyor </span></div>";
+                        } else if (question.status === 2) {
+                            htmlContent += "<div class='col-md-6'><span class='badge badge-success'> Onaylandı </span></div>";
+                        }
+                        if (Role) {
+                            htmlContent += "<div class='col-md-6'><span class='font-weight-bold' style='margin-left:auto;font-size:12px'> Ekleyen : " + question.appUser.name + " " + question.appUser.surname + " - " + moment(question.createdDate).format("DD.MM.YYYY") + "</span></div>";
+                        }
+                        htmlContent += "</div></div>" +
                             "</div>" +
                             "</div>";
 

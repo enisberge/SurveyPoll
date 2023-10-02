@@ -7,6 +7,7 @@ namespace SurveyPoll.WebUI.Models
     {
         public string QuestionText { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public int UserId { get; set; }
         public int Status { get; set; }
         public DateTime CreatedDate { get; set; }=DateTime.Now;
         public List<AddQuestionOptionViewModel> QuestionOptions { get; set; }

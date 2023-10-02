@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SurveryPoll.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,6 @@ namespace Data.Entities
         public string? Address { get; set; }
         public int Status { get; set; }
         public DateTime CreatedDate { get; set; }
+        public List<Question> Questions { get; set; }
     }
 }

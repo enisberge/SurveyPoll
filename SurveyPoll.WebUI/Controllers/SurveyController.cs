@@ -31,7 +31,7 @@ namespace SurveyPoll.WebUI.Controllers
         public IActionResult GetQuestion(int SayfaNo, int pageSize = 6) {
 
             var questions = _questionRepository.GetAllQuestionsWithOptions();
-            var questionWithOptionsViewModels = _mapper.Map<List<QuestionWithOptionsViewModel>>(questions);
+            var questionWithOptionsViewModels = _mapper.Map<List<QuestionListViewModel>>(questions);
 
             // Sayfada görüntülenecek verileri seçin
             var startIndex = (SayfaNo - 1) * pageSize;

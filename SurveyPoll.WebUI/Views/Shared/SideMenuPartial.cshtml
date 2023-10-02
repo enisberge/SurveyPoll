@@ -1,5 +1,5 @@
-﻿@*@if (User.Identity.IsAuthenticated)
-{*@
+﻿@if (User.IsInRole("Admin"))
+{
     <!-- Sidebar -->
     <div class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
@@ -126,4 +126,4 @@
 
     </div>
     <!-- End of Sidebar -->
-@*}*@
+}

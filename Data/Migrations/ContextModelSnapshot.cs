@@ -292,6 +292,9 @@ namespace SurveryPoll.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AppUserId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -306,6 +309,8 @@ namespace SurveryPoll.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
 
                     b.ToTable("Questions");
                 });
@@ -432,6 +437,17 @@ namespace SurveryPoll.DataAccess.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SurveryPoll.DataAccess.Entities.Question", b =>
+                {
+                    b.HasOne("Data.Entities.AppUser", "AppUser")
+                        .WithMany("Questions")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("SurveryPoll.DataAccess.Entities.QuestionOption", b =>
                 {
                     b.HasOne("SurveryPoll.DataAccess.Entities.Question", "Question")
@@ -441,6 +457,11 @@ namespace SurveryPoll.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("Data.Entities.AppUser", b =>
+                {
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("SurveryPoll.DataAccess.Entities.Question", b =>

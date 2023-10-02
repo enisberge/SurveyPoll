@@ -1,6 +1,7 @@
 ﻿using Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SurveryPoll.DataAccess.Entities;
 using SurveyPoll.WebUI.Models;
 using System.Data;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -11,12 +12,14 @@ namespace SurveyPoll.WebUI.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly RoleManager<AppRole> _roleManager;
 
         //private readonly RoleManager<Role> _roleManager;
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
         public IActionResult Register()
@@ -48,7 +51,19 @@ namespace SurveyPoll.WebUI.Controllers
                     var identityResult = await _userManager.CreateAsync(user, model.Password);
                     if (identityResult.Succeeded)
                     {
-                        //var roleExists = await _roleManager.RoleExistsAsync("User");
+                        var roleExists = await _roleManager.RoleExistsAsync("User");
+
+                        if (!roleExists)
+                        {
+                            var newRole = new AppRole { 
+                            Name = "User",
+                            CreatedDate=DateTime.Now,
+                            };
+                            await _roleManager.CreateAsync(newRole);
+                        }
+
+
+                        await _userManager.AddToRoleAsync(user, "User");
 
                         return Json(new { isValid = true,message="Giriş ekranına yönlendiriliyorsunuz."});
 

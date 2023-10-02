@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
+using Data.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SurveryPoll.DataAccess.Entities;
 using SurveryPoll.DataAccess.Repositories;
 using SurveyPoll.WebUI.Models;
+using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SurveyPoll.WebUI.Controllers
@@ -11,13 +15,14 @@ namespace SurveyPoll.WebUI.Controllers
     {
         private readonly QuestionRepository _questionRepository;
         private readonly QuestionOptionRepository _questionOptionRepository;
-
+        private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
-        public QuestionController(QuestionRepository questionRepository, IMapper mapper, QuestionOptionRepository questionOptionRepository)
+        public QuestionController(QuestionRepository questionRepository, IMapper mapper, QuestionOptionRepository questionOptionRepository, UserManager<AppUser> userManager)
         {
             _questionRepository = questionRepository;
             _mapper = mapper;
             _questionOptionRepository = questionOptionRepository;
+            _userManager = userManager;
         }
 
         //public IActionResult Category()
@@ -113,7 +118,7 @@ namespace SurveyPoll.WebUI.Controllers
         //    return Json(new { isSuccess = true});
 
         //}
-
+        [Authorize]
         public async Task<IActionResult> List()
         {
 
@@ -124,12 +129,16 @@ namespace SurveyPoll.WebUI.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                var user = await _userManager.GetUserAsync(User);
                 var question = new Question
                 {
                     QuestionText = model.QuestionText,
                     IsDeleted = model.IsDeleted,
-                    Status = 2,
-                    CreatedDate = model.CreatedDate
+                    Status = User.IsInRole("Admin") ? 2 : 1,
+                    CreatedDate = model.CreatedDate,
+                    AppUserId = Convert.ToInt32(user.Id)
+
                 };
                 _questionRepository.Add(question);
                 var options = model.QuestionOptions.Select(optionViewModel => new QuestionOption
@@ -139,18 +148,28 @@ namespace SurveyPoll.WebUI.Controllers
                     QuestionId = question.Id // Soruyla ilişkilendirin
                 }).ToList();
                 _questionOptionRepository.AddRange(options);
-                return Ok("Soru ve seçenekler başarıyla kaydedildi.");
+                return Json(new { isSuccess = true, message = "Ekleme işlemi başarılı !" });
             }
 
-            return BadRequest("Geçersiz veri girişi.");
+            return Json(new { isSuccess = false, message = "Ekleme işlemi başarısız !" });
         }
 
         [HttpGet]
-        public IActionResult GetQuestion(int SayfaNo, int pageSize = 6)
+        public async Task<IActionResult> GetQuestion(int SayfaNo, int pageSize = 6)
         {
+            var questions = new List<Question>();
 
-            var questions = _questionRepository.GetAllQuestionsWithOptions();
-            var questionWithOptionsViewModels = _mapper.Map<List<QuestionWithOptionsViewModel>>(questions);
+            if (User.IsInRole("Admin"))
+            {
+            questions = _questionRepository.GetAllQuestionsWithOptions();
+            }
+            else if (User.IsInRole("User"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+             questions = _questionRepository.GetQuestionsForUser(user.Id);
+            }
+
+            var questionWithOptionsViewModels = _mapper.Map<List<QuestionListViewModel>>(questions);
 
             // Sayfada görüntülenecek verileri seçin
             var startIndex = (SayfaNo - 1) * pageSize;
@@ -161,6 +180,45 @@ namespace SurveyPoll.WebUI.Controllers
 
             return Json(new { Data = pageData, TotalPages = totalPages });
 
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetQuestionById(int id)
+        {
+            var question = _questionRepository.GetQuestionWithQuestionOptionsById(id);
+            var questionViewModel = _mapper.Map<QuestionViewModel>(question);
+            return Json(questionViewModel);
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdateQuestion(UpdateQuestionViewModel model)
+        {
+            if (model != null)
+            {
+                // Modeldeki verileri kullanarak güncelleme işlemini gerçekleştirin
+                var existingQuestion = _questionRepository.GetById(model.Id);
+
+                if (existingQuestion != null)
+                {
+                    existingQuestion.QuestionText = model.QuestionText;
+
+                    // QuestionOptions verilerini güncelleme işlemi
+                    foreach (var option in model.QuestionOptions)
+                    {
+                        var existingOption = _questionOptionRepository.GetById(option.Id);
+                        if (existingOption != null)
+                        {
+                            existingOption.OptionText = option.OptionText;
+                            // Eksik olan işlemleri burada yapabilirsiniz, örneğin yeni seçenek eklemek ya da silmek
+                        }
+                    }
+
+                    // Değişiklikleri veritabanına kaydedin
+                    _questionRepository.Update(existingQuestion);
+
+                    return Json(new { isSuccess = true, message = "Güncelleme başarılı !" });
+                }
+            }
+
+            return Json(new { isSuccess = false, message = "Güncelleme başarısız !" });
         }
     }
 

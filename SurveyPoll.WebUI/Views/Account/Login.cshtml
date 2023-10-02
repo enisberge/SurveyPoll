@@ -125,8 +125,8 @@
                                 showCancelButton: true, // Kullanıcıya uyarıyı kapatma seçeneği sunar
                                 cancelButtonText: "Kapat", // Kapatma düğmesinin metni
                             }).then(function () {
-                                // 5 saniye sonra login sayfasına yönlendirme yapabilirsiniz
-                                window.location.href = "/Account/Login"; // Yönlendirme yapılacak sayfanın URL'si
+                                window.location.href = "/Account/Login";
+                               
                             });
 
                         }
@@ -135,11 +135,10 @@
                                 title: "Kullanıcı Girişi Başarılı !",
                                 text: response.message,
                                 icon: "success",
-                                timer: 2000,
+                                timer: 5000,
                                 showConfirmButton: false
                             }).then(function () {
-                                // 5 saniye sonra login sayfasına yönlendirme yapabilirsiniz
-                                //window.location.href = "/Account/Login"; // Yönlendirme yapılacak sayfanın URL'si
+                                window.location.href = "/Survey/Create"; // Yönlendirme yapılacak sayfanın URL'si
                             });
                         }
 

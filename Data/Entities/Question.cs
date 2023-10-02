@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,7 @@ namespace SurveryPoll.DataAccess.Entities
         public DateTime CreatedDate { get; set; }
         public List<QuestionOption> QuestionOptions { get; set; }
         public List<Survey> Surveys { get; set; }
+        public int AppUserId { get; set; }
+        public AppUser AppUser { get; set; }
     }
 }
