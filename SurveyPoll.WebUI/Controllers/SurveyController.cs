@@ -17,11 +17,14 @@ namespace SurveyPoll.WebUI.Controllers
         private readonly QuestionRepository _questionRepository;
         private readonly SurveyRepository _surveyRepository;
         private readonly UserManager<AppUser> _userManager;
+        private readonly CorrectAnswerRepository _correctAnswerRepository;
+
         private readonly IMapper _mapper;
-        public SurveyController(QuestionRepository questionRepository, IMapper mapper,SurveyRepository surveyRepository, UserManager<AppUser> userManager)
+        public SurveyController(QuestionRepository questionRepository, IMapper mapper, SurveyRepository surveyRepository, UserManager<AppUser> userManager, CorrectAnswerRepository correctAnswerRepository)
         {
             _questionRepository = questionRepository;
             _surveyRepository = surveyRepository;
+            _correctAnswerRepository = correctAnswerRepository;
             _userManager = userManager;
             _mapper = mapper;
         }
@@ -35,7 +38,8 @@ namespace SurveyPoll.WebUI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetQuestion(int SayfaNo, int pageSize = 6) {
+        public IActionResult GetQuestion(int SayfaNo, int pageSize = 6)
+        {
 
             var questions = _questionRepository.GetAllApprovedQuestions();//bütün onaylı sorular
             var questionWithOptionsViewModels = _mapper.Map<List<QuestionListViewModel>>(questions);
@@ -53,19 +57,31 @@ namespace SurveyPoll.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddSurvey([FromBody] AddSurveyViewModel model)
         {
-            string SurveyCode = Guid.NewGuid().ToString();
+            Guid guid = Guid.NewGuid();
+            string SurveyCode = guid.ToString();
             var user = await _userManager.GetUserAsync(User);
             var survey = new Survey
             {
                 FirstName = model.FirstName,
-                LastName = model.LastName,  
+                LastName = model.LastName,
                 Title = model.Title,
-                SurveyCode=SurveyCode,
-                UserId=user.Id
+                SurveyCode = SurveyCode,
+                UserId = user == null ? 0 : user.Id
             };
             _surveyRepository.Add(survey);
+            var correctAnswers = model.Questions
+     .Select(question => new CorrectAnswer
+     {
+         QuestionId = question.QuestionId,
+         QuestionOptionId = question.QuestionOptionId,
+         SurveyId = survey.Id
+     })
+     .ToList();
 
-            return View(model);
+            _correctAnswerRepository.AddRange(correctAnswers);
+
+            return Json(new { isSuccess = true, message = "Anket oluşturma başarılı !",data= Url.Content("~/") + SurveyCode
+        });
         }
     }
 }

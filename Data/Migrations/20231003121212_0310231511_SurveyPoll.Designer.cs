@@ -12,8 +12,8 @@ using SurveryPoll.DataAccess.Contexts;
 namespace SurveryPoll.DataAccess.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20231002123401_0210231522_SurveyPollMigration")]
-    partial class _0210231522_SurveyPollMigration
+    [Migration("20231003121212_0310231511_SurveyPoll")]
+    partial class _0310231511_SurveyPoll
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -359,8 +359,9 @@ namespace SurveryPoll.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("SurveyCode")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("SurveyCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()

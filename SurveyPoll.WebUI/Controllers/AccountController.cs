@@ -51,19 +51,19 @@ namespace SurveyPoll.WebUI.Controllers
                     var identityResult = await _userManager.CreateAsync(user, model.Password);
                     if (identityResult.Succeeded)
                     {
-                        var roleExists = await _roleManager.RoleExistsAsync("User");
+                        var roleExists = await _roleManager.RoleExistsAsync("Admin");
 
                         if (!roleExists)
                         {
                             var newRole = new AppRole { 
-                            Name = "User",
+                            Name = "Admin",
                             CreatedDate=DateTime.Now,
                             };
                             await _roleManager.CreateAsync(newRole);
                         }
 
 
-                        await _userManager.AddToRoleAsync(user, "User");
+                        await _userManager.AddToRoleAsync(user, "Admin");
 
                         return Json(new { isValid = true,message="Giriş ekranına yönlendiriliyorsunuz."});
 

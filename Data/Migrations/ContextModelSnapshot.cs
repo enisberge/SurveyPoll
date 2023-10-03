@@ -356,8 +356,9 @@ namespace SurveryPoll.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("SurveyCode")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("SurveyCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()

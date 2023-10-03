@@ -133,7 +133,7 @@
                                     </div>
                                 </div>
 
-                                <button class="btn btn-primary next-step" id="questionPage">Sonraki</button>
+                                <a class="btn btn-primary next-step" id="questionPage">Sonraki</a>
                             </div>
 
                             <!-- Adım 2 -->
@@ -162,13 +162,20 @@
 
                             <!-- Adım 3 -->
                             <div class="form-step" id="step3">
-                                <h2>Adım 3 <i class="fas fa-check"></i></h2>
+                                <h5>Paylaş <i class="fas fa-share-square"></i></h5>
                                 <div class="form-group">
-                                    <label for="field3">Alan 3:</label>
-                                    <input type="text" class="form-control" id="field3" name="field3" required>
+                                    <div class="alert alert-success new2 p-4">
+                                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                        <div class="alert-body">
+                                            <h4 class="alert-header">Tebrikler, anketinizi oluşturdunuz.</h4>
+                                            <h6 >Aşağıda yer alan bağlantıyı kopyalayıp anketinizi arkadaşlarınızla paylaşabilirsiniz.</h6>
+
+                                        </div>
+                                    </div>
+                                    <label for="title"
+                                           class="form-label">Bağlantı Linki</label>
+                                    <input type="text" class="form-control" id="field3" name="surveyurl" >
                                 </div>
-                                <button class="btn btn-primary prev-step">Önceki</button>
-                                <button type="submit" class="btn btn-success">Gönder</button>
                             </div>
                         </form>
                     </div>
@@ -218,13 +225,12 @@
                 console.log(surveyData);
 
                 $.ajax({
-                    url: '/Survey/AddSurvey', // POST işlemini yapmak istediğiniz controller ve action'ın yolu
+                    url: '/Survey/AddSurvey', 
                     type: 'POST',
-                    contentType: 'application/json', // Veri türü JSON
-                    data: JSON.stringify(surveyData), // Göndermek istediğiniz veriyi JSON'a dönüştürün
+                    contentType: 'application/json', 
+                    data: JSON.stringify(surveyData),
                     success: function (result) {
-                        // İşlem başarılı olduysa burada gerekli işlemleri yapabilirsiniz
-                        // Örneğin, bir mesaj göstermek veya başka bir sayfaya yönlendirmek
+                      console.log(result.data)
                     },
                     error: function (error) {
                         // İşlem sırasında hata oluştuysa burada gerekli işlemleri yapabilirsiniz
