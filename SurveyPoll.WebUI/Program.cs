@@ -19,6 +19,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<QuestionRepository>();
 builder.Services.AddScoped<QuestionOptionRepository>();
+builder.Services.AddScoped<SurveyRepository>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<Context>();
 builder.Services.AddIdentity<AppUser, AppRole>(

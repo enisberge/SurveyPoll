@@ -161,12 +161,12 @@ namespace SurveyPoll.WebUI.Controllers
 
             if (User.IsInRole("Admin"))
             {
-            questions = _questionRepository.GetAllQuestionsWithOptions();
+                questions = _questionRepository.GetAllApprovedOrPendingQuestions();
             }
             else if (User.IsInRole("User"))
             {
                 var user = await _userManager.GetUserAsync(User);
-             questions = _questionRepository.GetQuestionsForUser(user.Id);
+                questions = _questionRepository.GetQuestionsForUser(user.Id);
             }
 
             var questionWithOptionsViewModels = _mapper.Map<List<QuestionListViewModel>>(questions);
@@ -187,6 +187,48 @@ namespace SurveyPoll.WebUI.Controllers
             var question = _questionRepository.GetQuestionWithQuestionOptionsById(id);
             var questionViewModel = _mapper.Map<QuestionViewModel>(question);
             return Json(questionViewModel);
+        }
+        [HttpPut]
+        public async Task<IActionResult> ApproveQuestion(int id)
+        {
+            var existingQuestion = _questionRepository.GetById(id);
+            if (existingQuestion != null)
+            {
+                existingQuestion.Status = 2;
+
+                _questionRepository.Update(existingQuestion);
+
+                return Json(new { isSuccess = true, message = "Soru onaylandı." });
+            }
+            return Json(new { isSuccess = false, message = "Güncelleme başarısız !" });
+        }
+        [HttpPut]
+        public async Task<IActionResult> DeleteQuestion(int id)
+        {
+            var existingQuestion = _questionRepository.GetById(id);
+            if (existingQuestion != null)
+            {
+                existingQuestion.IsDeleted =true;
+
+                _questionRepository.Update(existingQuestion);
+
+                return Json(new { isSuccess = true, message = "Soru silindi." });
+            }
+            return Json(new { isSuccess = false, message = "Güncelleme başarısız !" });
+        }
+        [HttpPut]
+        public async Task<IActionResult> RejectQuestion(int id)
+        {
+            var existingQuestion = _questionRepository.GetById(id);
+            if (existingQuestion != null)
+            {
+                existingQuestion.Status = 3;
+
+                _questionRepository.Update(existingQuestion);
+
+                return Json(new { isSuccess = true, message = "Soru reddedildi." });
+            }
+            return Json(new { isSuccess = false, message = "Güncelleme başarısız !" });
         }
         [HttpPut]
         public async Task<IActionResult> UpdateQuestion(UpdateQuestionViewModel model)

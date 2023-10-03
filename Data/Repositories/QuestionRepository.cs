@@ -14,26 +14,39 @@ namespace SurveryPoll.DataAccess.Repositories
         public QuestionRepository(Context context) : base(context)
         {
         }
-        public List<Question> GetAllQuestionsWithOptions()
+        //GetAllQuestionsWithOptions
+        public List<Question> GetAllApprovedQuestions()
         {
             var context = new Context();
-            var questionsWithUsers = context.Questions
-    .Include(q => q.AppUser)
-    .Include(q => q.QuestionOptions)
-    .Where(q => !q.IsDeleted)
-    .ToList();
-            return questionsWithUsers;
+            var approvedQuestions = context.Questions
+                .Include(q => q.AppUser)
+                .Include(q => q.QuestionOptions)
+                .Where(q => !q.IsDeleted && q.Status == 2)
+                .OrderByDescending(q => q.CreatedDate)
+                .ToList();
+            return approvedQuestions;
+        }
+        public List<Question> GetAllApprovedOrPendingQuestions()
+        {
+            var context = new Context();
+            var approvedOrPendingQuestions = context.Questions
+                .Include(q => q.AppUser)
+                .Include(q => q.QuestionOptions)
+                .Where(q => !q.IsDeleted && (q.Status == 1 || q.Status == 2))
+                .OrderByDescending(q => q.CreatedDate)
+                .ToList();
+            return approvedOrPendingQuestions;
         }
         public List<Question> GetQuestionsForUser(int userId)
         {
             var context = new Context();
-            // Veritabanından kullanıcının eklediği soruları çekin
             var userQuestions = context.Questions
-                .Include(q => q.AppUser)
-    .Include(q => q.QuestionOptions)
-    .Where(q => !q.IsDeleted)
-                .Where(q => q.AppUserId == userId && !q.IsDeleted)
-                .ToList();
+         .Include(q => q.AppUser)
+         .Include(q => q.QuestionOptions)
+         .Where(q => !q.IsDeleted && (q.Status == 1 || q.Status == 2))
+         .Where(q => q.AppUserId == userId && !q.IsDeleted)
+         .OrderByDescending(q => q.CreatedDate)
+         .ToList();
 
             return userQuestions;
         }

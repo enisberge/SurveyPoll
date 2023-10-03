@@ -19,7 +19,7 @@ namespace SurveyPoll.WebUI.Components
         }
         public async Task<IViewComponentResult> InvokeAsync(int page = 1, int pageSize = 6)
         {
-            var questions = _questionRepository.GetAllQuestionsWithOptions();
+            var questions = _questionRepository.GetAllApprovedQuestions();
 
             var questionWithOptions = _mapper.Map<List<QuestionListViewModel>>(questions);
 

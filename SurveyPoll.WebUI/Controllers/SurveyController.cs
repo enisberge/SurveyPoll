@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
+using Data.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using SurveryPoll.DataAccess.Entities;
 using SurveryPoll.DataAccess.Repositories;
 using SurveyPoll.WebUI.Models;
 using System.Drawing.Printing;
@@ -12,10 +15,14 @@ namespace SurveyPoll.WebUI.Controllers
     public class SurveyController : Controller
     {
         private readonly QuestionRepository _questionRepository;
+        private readonly SurveyRepository _surveyRepository;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
-        public SurveyController(QuestionRepository questionRepository, IMapper mapper)
+        public SurveyController(QuestionRepository questionRepository, IMapper mapper,SurveyRepository surveyRepository, UserManager<AppUser> userManager)
         {
             _questionRepository = questionRepository;
+            _surveyRepository = surveyRepository;
+            _userManager = userManager;
             _mapper = mapper;
         }
         public IActionResult Index()
@@ -30,7 +37,7 @@ namespace SurveyPoll.WebUI.Controllers
         [HttpGet]
         public IActionResult GetQuestion(int SayfaNo, int pageSize = 6) {
 
-            var questions = _questionRepository.GetAllQuestionsWithOptions();
+            var questions = _questionRepository.GetAllApprovedQuestions();//bütün onaylı sorular
             var questionWithOptionsViewModels = _mapper.Map<List<QuestionListViewModel>>(questions);
 
             // Sayfada görüntülenecek verileri seçin
@@ -44,8 +51,20 @@ namespace SurveyPoll.WebUI.Controllers
 
         }
         [HttpPost]
-        public IActionResult AddSurvey([FromBody] AddSurveyViewModel model)
+        public async Task<IActionResult> AddSurvey([FromBody] AddSurveyViewModel model)
         {
+            string SurveyCode = Guid.NewGuid().ToString();
+            var user = await _userManager.GetUserAsync(User);
+            var survey = new Survey
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,  
+                Title = model.Title,
+                SurveyCode=SurveyCode,
+                UserId=user.Id
+            };
+            _surveyRepository.Add(survey);
+
             return View(model);
         }
     }

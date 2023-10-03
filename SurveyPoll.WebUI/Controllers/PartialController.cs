@@ -20,7 +20,7 @@ namespace SurveyPoll.WebUI.Controllers
         public ActionResult LoadPagedQuestions(int page=1)
         {
             int pageSize = 6;
-            var questions = _questionRepository.GetAllQuestionsWithOptions();
+            var questions = _questionRepository.GetAllApprovedQuestions();
             var questionWithOptions = _mapper.Map<List<QuestionListViewModel>>(questions);
             var pagedQuestions = questionWithOptions.ToPagedList(page, pageSize);
 
