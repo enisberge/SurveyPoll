@@ -21,6 +21,9 @@ builder.Services.AddScoped<QuestionRepository>();
 builder.Services.AddScoped<QuestionOptionRepository>();
 builder.Services.AddScoped<SurveyRepository>();
 builder.Services.AddScoped<CorrectAnswerRepository>();
+builder.Services.AddScoped<SurveyQuestionRepository>();
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<Context>();
@@ -56,6 +59,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");

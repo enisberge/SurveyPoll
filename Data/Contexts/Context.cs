@@ -20,7 +20,7 @@ namespace SurveryPoll.DataAccess.Contexts
         public DbSet<QuestionOption>QuestionOptions { get; set; }
         public DbSet<Survey> Surveys{ get; set; }
         public DbSet<CorrectAnswer>CorrectAnswers { get; set; }
-
+        public DbSet<SurveyQuestion> SurveyQuestion { get; set; }
 
         //public Context(DbContextOptions<Context> options):base(options) { 
 
@@ -28,6 +28,23 @@ namespace SurveryPoll.DataAccess.Contexts
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("server=(LocalDb)\\MSSQLLocalDB;database=SurveyPoll; integrated security=true");
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<SurveyQuestion>()
+         .HasKey(qs => new { qs.QuestionId, qs.SurveyId });
+
+            modelBuilder.Entity<SurveyQuestion>()
+                .HasOne(qs => qs.Question)
+                .WithMany(q => q.SurveyQuestions)
+                .HasForeignKey(qs => qs.QuestionId);
+
+            modelBuilder.Entity<SurveyQuestion>()
+                .HasOne(qs => qs.Survey)
+                .WithMany(s => s.SurveyQuestions)
+                .HasForeignKey(qs => qs.SurveyId);
         }
     }
 }

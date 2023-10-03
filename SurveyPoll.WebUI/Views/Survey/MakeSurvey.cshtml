@@ -1,0 +1,208 @@
+﻿@model SurveyViewModel
+@{
+    int questionCounter = 1;
+}
+@{
+    ViewData["Title"] = "Anket Cevapla";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles{
+    <style>
+        .firstpage {
+            background-image: url('/admintemplate/img/23984.jpg');
+            background-size: cover; /* Resmi kapsayacak şekilde boyutlandırın */
+            background-repeat: no-repeat; /* Resmi yinelemeyi devre dışı bırakın */
+        }
+
+        .field-error {
+            color: #dc3545; /* Kırmızı renk */
+            font-size: 0.875rem; /* Küçük bir font boyutu */
+        }
+
+        .toast-error {
+            background-color: brown;
+            color: white;
+        }
+
+        .toast-success {
+            background-color: darkgreen;
+            color: white;
+        }
+
+        .correct-answer {
+            border: 3px solid #5ABF00;
+            padding: 0px; /* İstenilen boşlukları ayarlayın */
+            border-radius: 5px; /* Yuvarlatılmış kenarlar */
+            margin: 0px 0; /* İstenilen marjinal boşlukları ayarlayın */
+        }
+
+        .wrong-answer {
+            border: 3px solid red;
+            padding: 0px; /* İstenilen boşlukları ayarlayın */
+            border-radius: 5px; /* Yuvarlatılmış kenarlar */
+            margin: 0px 0; /* İstenilen marjinal boşlukları ayarlayın */
+        }
+
+    </style>
+}
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8 page">
+        <div class="card shadow border-left-warning">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h4 class="m-0 font-weight-bold text-primary">@Model.Title</h4>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body firstpage">
+                <div class="chart-area">
+                    <h4 style="text-align:center;font-weight:bold">Hoşgeldiniz</h4>
+                    <h5 style="text-align:center;font-weight:bold">Ankete başlamak için Ad Soyad bilgilerinizi girmelisiniz.</h5>
+                    <div class="row mx-5">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="firstname"
+                                       class="form-label">Ad</label>
+                                <input type="text" class="form-control"
+                                       id="firstname">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="lastname"
+                                       class="form-label">Soyad</label>
+                                <input type="text" class="form-control"
+                                       id="lastname">
+                            </div>
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <a id="startsurvey" class="btn btn-success btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-play"></i>
+                                </span>
+                                <span class="text">Ankete Başla</span>
+                            </a>
+                        </div>
+                        <div class="col-md-12 mt-2 text-center">
+                            <a href="#" class="btn btn-primary btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-chart-line"></i>
+                                </span>
+                                <span class="text">Skor Görüntüle</span>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+@foreach (var question in Model.Questions)
+{
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8 page @("page-" + questionCounter)" style="display:none">
+            <div class="card shadow">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h4 class="m-0 font-weight-bold text-primary">@($"{questionCounter++}. soru")</h4>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-area">
+                        <h6 class="mx-4" style="font-weight:bold">@question.QuestionText </h6>
+                        <ul class="mt-3" style="list-style-type: none;">
+                            @foreach (var option in question.QuestionOptions)
+                            {
+                                <li>
+                                    <div class="form-group m-0">
+                                        <input type="radio" question-id="@question.Id" name="@($"question-{question.Id}")" value="@option.Id" id="@($"option-{option.Id}")">
+                                        <label for="@($"option-{option.Id}")">@option.OptionText</label>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+}
+
+
+
+@section Scripts{
+
+    <script>
+        // CorrectAnswers'ı JavaScript değişkenine atama
+        var correctAnswers = @Html.Raw(Json.Serialize(Model.CorrectAnswers));
+        var questionCount = @Model.Questions.Count;
+        $(function () {
+
+            var currentPage = 1;
+
+            // Sayfa geçiş fonksiyonu
+            function goToPage(pageNumber) {
+                // Tüm sayfaları gizle
+                $(".page").hide();
+
+                // Belirli sayfayı göster
+                $(".page-" + pageNumber).show();
+
+                // Sayfa numarasını güncelle
+                currentPage = pageNumber;
+            }
+
+
+            $("#startsurvey").click(function () {
+                var FirstName = $("#firstname").val().trim();
+                var LastName = $("#lastname").val().trim();
+                if (FirstName == "") {
+                    toastr.error('Ad bilgisi boş geçilemez !');
+                    return false;
+                }
+                if (LastName == "") {
+                    toastr.error('Soyad bilgisi boş geçilemez !');
+                    return false;
+                }
+                goToPage(1);
+
+            });
+
+
+            $("input[type='radio']").change(function () {
+                var questionId = $(this).attr("question-id");
+                var optionId = $(this).val();
+                var optionName = "question-" + questionId;
+
+                $("input[type='radio'][name='"+optionName+"']").prop("disabled", true);
+                // Doğru cevabı al
+                var correctanswer = correctAnswers.find(function (answer) {
+                    return answer.questionId == questionId;
+                });
+
+                var $selectedRadio = $("input[type='radio'][question-id='" + correctanswer.questionId + "'][name='question-" + correctanswer.questionId + "'][value='" + correctanswer.questionOptionId + "']");
+
+                // Kullanıcının seçtiği radio düğmesi ile correctanswer ile belirlediğiniz farklı ise "wrong-answer" sınıfını ekle
+                if (!$(this).is($selectedRadio)) {
+                    $(this).closest("li").addClass("wrong-answer");
+                } else {
+                    $(this).closest("li").removeClass("wrong-answer");
+                }
+
+                // Doğru cevabı işaretle
+                $selectedRadio.closest("li").addClass("correct-answer")
+                setTimeout(function () {
+                    if (currentPage < questionCount) {
+                        goToPage(currentPage + 1);
+                    }
+                }, 2000);
+               
+            });
+            console.log(correctAnswers);
+        });
+    </script>
+}

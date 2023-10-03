@@ -214,21 +214,6 @@ namespace SurveryPoll.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("QuestionSurvey", b =>
-                {
-                    b.Property<int>("QuestionsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SurveysId")
-                        .HasColumnType("int");
-
-                    b.HasKey("QuestionsId", "SurveysId");
-
-                    b.HasIndex("SurveysId");
-
-                    b.ToTable("QuestionSurvey");
-                });
-
             modelBuilder.Entity("SurveryPoll.DataAccess.Entities.AppRole", b =>
                 {
                     b.Property<int>("Id")
@@ -280,6 +265,8 @@ namespace SurveryPoll.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SurveyId");
 
                     b.ToTable("CorrectAnswers");
                 });
@@ -372,6 +359,21 @@ namespace SurveryPoll.DataAccess.Migrations
                     b.ToTable("Surveys");
                 });
 
+            modelBuilder.Entity("SurveryPoll.DataAccess.Entities.SurveyQuestion", b =>
+                {
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SurveyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("QuestionId", "SurveyId");
+
+                    b.HasIndex("SurveyId");
+
+                    b.ToTable("SurveyQuestion");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("SurveryPoll.DataAccess.Entities.AppRole", null)
@@ -423,17 +425,11 @@ namespace SurveryPoll.DataAccess.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("QuestionSurvey", b =>
+            modelBuilder.Entity("SurveryPoll.DataAccess.Entities.CorrectAnswer", b =>
                 {
-                    b.HasOne("SurveryPoll.DataAccess.Entities.Question", null)
-                        .WithMany()
-                        .HasForeignKey("QuestionsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("SurveryPoll.DataAccess.Entities.Survey", null)
-                        .WithMany()
-                        .HasForeignKey("SurveysId")
+                        .WithMany("CorrectAnswers")
+                        .HasForeignKey("SurveyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -460,6 +456,25 @@ namespace SurveryPoll.DataAccess.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("SurveryPoll.DataAccess.Entities.SurveyQuestion", b =>
+                {
+                    b.HasOne("SurveryPoll.DataAccess.Entities.Question", "Question")
+                        .WithMany("SurveyQuestions")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SurveryPoll.DataAccess.Entities.Survey", "Survey")
+                        .WithMany("SurveyQuestions")
+                        .HasForeignKey("SurveyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("Survey");
+                });
+
             modelBuilder.Entity("Data.Entities.AppUser", b =>
                 {
                     b.Navigation("Questions");
@@ -468,6 +483,15 @@ namespace SurveryPoll.DataAccess.Migrations
             modelBuilder.Entity("SurveryPoll.DataAccess.Entities.Question", b =>
                 {
                     b.Navigation("QuestionOptions");
+
+                    b.Navigation("SurveyQuestions");
+                });
+
+            modelBuilder.Entity("SurveryPoll.DataAccess.Entities.Survey", b =>
+                {
+                    b.Navigation("CorrectAnswers");
+
+                    b.Navigation("SurveyQuestions");
                 });
 #pragma warning restore 612, 618
         }

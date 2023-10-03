@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SurveryPoll.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class _0310231511_SurveyPoll : Migration
+    public partial class _0310231736_SurveyPoll : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,21 +57,6 @@ namespace SurveryPoll.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CorrectAnswers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    QuestionId = table.Column<int>(type: "int", nullable: false),
-                    QuestionOptionId = table.Column<int>(type: "int", nullable: false),
-                    SurveyId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CorrectAnswers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -221,6 +206,27 @@ namespace SurveryPoll.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CorrectAnswers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuestionId = table.Column<int>(type: "int", nullable: false),
+                    QuestionOptionId = table.Column<int>(type: "int", nullable: false),
+                    SurveyId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CorrectAnswers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CorrectAnswers_Surveys_SurveyId",
+                        column: x => x.SurveyId,
+                        principalTable: "Surveys",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "QuestionOptions",
                 columns: table => new
                 {
@@ -242,24 +248,24 @@ namespace SurveryPoll.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "QuestionSurvey",
+                name: "SurveyQuestion",
                 columns: table => new
                 {
-                    QuestionsId = table.Column<int>(type: "int", nullable: false),
-                    SurveysId = table.Column<int>(type: "int", nullable: false)
+                    QuestionId = table.Column<int>(type: "int", nullable: false),
+                    SurveyId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuestionSurvey", x => new { x.QuestionsId, x.SurveysId });
+                    table.PrimaryKey("PK_SurveyQuestion", x => new { x.QuestionId, x.SurveyId });
                     table.ForeignKey(
-                        name: "FK_QuestionSurvey_Questions_QuestionsId",
-                        column: x => x.QuestionsId,
+                        name: "FK_SurveyQuestion_Questions_QuestionId",
+                        column: x => x.QuestionId,
                         principalTable: "Questions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_QuestionSurvey_Surveys_SurveysId",
-                        column: x => x.SurveysId,
+                        name: "FK_SurveyQuestion_Surveys_SurveyId",
+                        column: x => x.SurveyId,
                         principalTable: "Surveys",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -305,6 +311,11 @@ namespace SurveryPoll.DataAccess.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CorrectAnswers_SurveyId",
+                table: "CorrectAnswers",
+                column: "SurveyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_QuestionOptions_QuestionId",
                 table: "QuestionOptions",
                 column: "QuestionId");
@@ -315,9 +326,9 @@ namespace SurveryPoll.DataAccess.Migrations
                 column: "AppUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestionSurvey_SurveysId",
-                table: "QuestionSurvey",
-                column: "SurveysId");
+                name: "IX_SurveyQuestion_SurveyId",
+                table: "SurveyQuestion",
+                column: "SurveyId");
         }
 
         /// <inheritdoc />
@@ -345,7 +356,7 @@ namespace SurveryPoll.DataAccess.Migrations
                 name: "QuestionOptions");
 
             migrationBuilder.DropTable(
-                name: "QuestionSurvey");
+                name: "SurveyQuestion");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
