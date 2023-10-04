@@ -127,8 +127,6 @@ namespace SurveyPoll.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddQuestion(AddQuestionViewModel model)
         {
-            if (ModelState.IsValid)
-            {
 
                 var user = await _userManager.GetUserAsync(User);
                 var question = new Question
@@ -149,9 +147,7 @@ namespace SurveyPoll.WebUI.Controllers
                 }).ToList();
                 _questionOptionRepository.AddRange(options);
                 return Json(new { isSuccess = true, message = "Ekleme işlemi başarılı !" });
-            }
-
-            return Json(new { isSuccess = false, message = "Ekleme işlemi başarısız !" });
+       
         }
 
         [HttpGet]

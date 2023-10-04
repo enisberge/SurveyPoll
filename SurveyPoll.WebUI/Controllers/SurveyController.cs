@@ -19,15 +19,17 @@ namespace SurveyPoll.WebUI.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly CorrectAnswerRepository _correctAnswerRepository;
         private readonly SurveyQuestionRepository _surveyQuestionRepository;
+        private readonly SurveyResponseRepository _surveyResponseRepository;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        public SurveyController(QuestionRepository questionRepository, IMapper mapper, SurveyRepository surveyRepository, UserManager<AppUser> userManager, CorrectAnswerRepository correctAnswerRepository, IHttpContextAccessor httpContextAccessor, SurveyQuestionRepository surveyQuestionRepository)
+        public SurveyController(QuestionRepository questionRepository, IMapper mapper, SurveyRepository surveyRepository, UserManager<AppUser> userManager, CorrectAnswerRepository correctAnswerRepository, IHttpContextAccessor httpContextAccessor, SurveyQuestionRepository surveyQuestionRepository, SurveyResponseRepository surveyResponseRepository)
         {
             _questionRepository = questionRepository;
             _surveyRepository = surveyRepository;
             _correctAnswerRepository = correctAnswerRepository;
             _surveyQuestionRepository= surveyQuestionRepository;
+            _surveyResponseRepository = surveyResponseRepository;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _mapper = mapper;
@@ -86,7 +88,25 @@ namespace SurveyPoll.WebUI.Controllers
             return View(viewModel);
 
         }
+        [HttpPost]
+        public async Task<IActionResult> SurveyResponse([FromBody]SurveyResponseModel model)
+        {
 
+            foreach (var option in model.SelectedOptions)
+            {
+                var surveyResponse = new SurveyResponse
+                {
+                    FirstName=model.FirstName,
+                    LastName=model.LastName,
+                    SurveyCode=model.SurveyCode,
+                    QuestionId=option.QuestionId,
+                    QuestionOptionId=option.OptionId
+                };
+                _surveyResponseRepository.Add(surveyResponse);
+            }
+            return Ok("Başarılı bir şekilde alındı.");
+
+        }
         public IActionResult MakeSurvey()
         {
             return View();

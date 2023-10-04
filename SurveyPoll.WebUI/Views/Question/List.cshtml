@@ -148,7 +148,9 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
-                        <button type="submit" class="btn btn-success">Kaydet</button>
+                        @*<button type="submit" class="btn btn-success">Kaydet</button>*@
+                        <a href="javascript:void(0)" id="btnAddQuestion" class="btn btn-success">Kaydet</a>
+
                     </div>
                 </form>
             </div>
@@ -447,6 +449,7 @@
                                     $("#editQuestionModal").find('form')[0].reset(); // Eğer bir form varsa
                                     // Modalı gizleme
                                     $("#editQuestionModal").modal('hide');
+                                    location.reload();
                                 });
                             }
                             else {
@@ -475,8 +478,8 @@
                 $('#addQuestionModal').modal('show');
                 var optionValues = {};
                 var questionOptions = [];
-                $('#addQuestionForm').submit(function (e) {
-                    e.preventDefault(); // Formun normal gönderimini engelle
+                $('#btnAddQuestion').click(function () {
+
                     var questionText = $("#title").val();
                     var optionA = $("#optionA").val().trim();
                     var optionB = $("#optionB").val().trim();
@@ -517,6 +520,7 @@
                         data: data,
                         success: function (response) {
                             if (response.isSuccess) {
+                                questionOptions.length=0;
                                 // Silme işlemi başarılı olduğunda SweetAlert ile bilgilendirme yapabilirsiniz
                                 Swal.fire({
                                     title: 'Başarılı !',
@@ -525,10 +529,11 @@
                                     timer: 2000,
                                     showConfirmButton: false
                                 }).then(function () {
-                                    getQuestionData(1);
+                                    //getQuestionData(1);
                                     $("#addQuestionModal").find('form')[0].reset(); // Eğer bir form varsa
                                     // Modalı gizleme
                                     $("#addQuestionModal").modal('hide');
+                                    location.reload();
                                 });
                             }
                             else {
