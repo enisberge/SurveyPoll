@@ -9,5 +9,16 @@ namespace SurveryPoll.DataAccess.Repositories
         public SurveyResponseRepository(Context context) : base(context)
         {
         }
+        public int GetSurveyResponseCount(string surveyCode)
+        {
+            var context = new Context();
+            var count = context.SurveyResponses
+                .Where(e => e.SurveyCode==surveyCode)
+                .Count();
+            return count;
+        }
+
+
+
     }
 }

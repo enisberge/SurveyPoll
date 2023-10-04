@@ -149,7 +149,37 @@ namespace SurveyPoll.WebUI.Controllers
                 return Json(new { isSuccess = true, message = "Ekleme işlemi başarılı !" });
        
         }
+        public IActionResult RejectQuestionList()
+        {
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetRejectQuestion(int SayfaNo, int pageSize = 6)
+        {
+            var questions = new List<Question>();
 
+            if (User.IsInRole("Admin"))
+            {
+                questions = _questionRepository.GetAllRejectQuestions();
+            }
+            else if (User.IsInRole("User"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                questions = _questionRepository.GetRejectQuestionForUser(user.Id);
+            }
+
+            var questionWithOptionsViewModels = _mapper.Map<List<QuestionListViewModel>>(questions);
+
+            // Sayfada görüntülenecek verileri seçin
+            var startIndex = (SayfaNo - 1) * pageSize;
+            var pageData = questionWithOptionsViewModels.Skip(startIndex).Take(pageSize).ToList();
+
+            var totalItemCount = questionWithOptionsViewModels.Count;
+            var totalPages = (int)Math.Ceiling((double)totalItemCount / pageSize);
+
+            return Json(new { Data = pageData, TotalPages = totalPages });
+
+        }
         [HttpGet]
         public async Task<IActionResult> GetQuestion(int SayfaNo, int pageSize = 6)
         {

@@ -40,6 +40,7 @@ builder.Services.AddIdentity<AppUser, AppRole>(
     }
     ).AddEntityFrameworkStores<Context>();
 builder.Services.AddMvc().AddFluentValidation();
+
 builder.Services.AddControllers();
 builder.Services.AddControllersWithViews().AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<Program>());
 

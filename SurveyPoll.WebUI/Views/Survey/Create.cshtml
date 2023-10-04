@@ -285,6 +285,10 @@
                     toastr.error("En fazla 4 adet soru ekleyebilirsiniz !");
                     return false;
                 }
+                if (surveyData.Questions.length == 10 && isAuthenticated == true) {
+                    toastr.error("En fazla 10 adet soru ekleyebilirsiniz !");
+                    return false;
+                }
 
                 $("input[type='radio'][name=question-" + questionId + "]").prop("disabled", true);
                 var selectedOptionValue = selectedOption.val(); // Seçilen radio butonunun value'sini alın

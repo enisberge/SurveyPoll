@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Kontenjan Dolu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles{
+    <style>
+        .firstpage {
+            background-image: url('/admintemplate/img/23984.jpg');
+            background-size: cover; /* Resmi kapsayacak şekilde boyutlandırın */
+            background-repeat: no-repeat; /* Resmi yinelemeyi devre dışı bırakın */
+        }
+    </style>
+}
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8 page">
+        <div class="card shadow border-left-warning" style="height:450px">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+               
+                <h4 class="m-0 font-weight-bold text-primary">Bu ankete erişemezsiniz</h4>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body firstpage" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h1><i class="fas fa-exclamation-triangle text-danger"></i></h1>
+                    <h4 style="text-align:center;font-weight:bold">Anketin cevaplanma kontenjanı dolmuştur !</h4>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-md-2"></div>
+</div>

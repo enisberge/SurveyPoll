@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -41,6 +42,7 @@ namespace SurveyPoll.WebUI.Controllers
         {
             return View();
         }
+        [AllowAnonymous,Authorize(Roles ="User")]
         public async Task<IActionResult> Create()
         {
             if (User.Identity.IsAuthenticated)
@@ -61,7 +63,14 @@ namespace SurveyPoll.WebUI.Controllers
         public IActionResult GetQuestion(int SayfaNo, int pageSize = 6)
         {
 
-            var questions = _questionRepository.GetAllApprovedQuestions();//bütün onaylı sorular
+            var questions = _questionRepository.GetAllApprovedQuestions(); // Bütün onaylı sorular
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                // Kullanıcı kimlik doğrulaması yapmamışsa, yalnızca ilk 10 soruyu çek
+                questions = questions.Take(10).ToList();
+            }
+
             var questionWithOptionsViewModels = _mapper.Map<List<QuestionListViewModel>>(questions);
 
             // Sayfada görüntülenecek verileri seçin
@@ -72,7 +81,6 @@ namespace SurveyPoll.WebUI.Controllers
             var totalPages = (int)Math.Ceiling((double)totalItemCount / pageSize);
 
             return Json(new { Data = pageData, TotalPages = totalPages });
-
         }
         [HttpGet("Survey/SurveyViewscore/{surveyCode}")]
         public async Task<IActionResult> SurveyViewscore(string surveyCode, int? page)
@@ -93,8 +101,15 @@ namespace SurveyPoll.WebUI.Controllers
 
         public async Task<IActionResult> MakeSurvey(string surveyCode)
         {
-            var result = _surveyRepository.GetSurveyWithQuestionsByGuid(surveyCode);
 
+            var result = _surveyRepository.GetSurveyWithQuestionsByGuid(surveyCode);
+            //result null ise bir hata sayfasına yönlendir
+
+            var surveyResponseCount=_surveyResponseRepository.GetSurveyResponseCount(surveyCode);
+            if (result.UserId == 0 && surveyResponseCount == 5)
+            {
+                return RedirectToAction("FullError", "Home");
+            }
             var viewModel = new SurveyViewModel
             {
                 FirstName = result.FirstName,
@@ -106,6 +121,8 @@ namespace SurveyPoll.WebUI.Controllers
 
             ViewBag.SurveyCode = surveyCode;
             ViewBag.SurveyId = result.Id;
+            ViewBag.UserId=result.UserId;
+            ViewBag.SurveyResponseCount = surveyResponseCount;
             return View(viewModel);
 
         }
@@ -118,6 +135,7 @@ namespace SurveyPoll.WebUI.Controllers
             var surveyList=_mapper.Map<List<SurveyListModel>>(values);
             return Json(surveyList);  
         }
+        [Authorize]
         public IActionResult SurveyList()
         {
             return View();
@@ -151,10 +169,10 @@ namespace SurveyPoll.WebUI.Controllers
             return Json(new { isSuccess = true });
 
         }
-        public IActionResult MakeSurvey()
-        {
-            return View();
-        }
+        //public IActionResult MakeSurvey()
+        //{
+        //    return View();
+        //}
 
 
         [HttpPost]

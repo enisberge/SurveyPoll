@@ -8,5 +8,14 @@ namespace SurveyPoll.WebUI.Controllers
         {
             return View();
         }
+        public IActionResult FullError()
+        {
+            return View();
+        }
+
+        public IActionResult NotFound()
+        {
+            return View();
+        }
     }
 }
