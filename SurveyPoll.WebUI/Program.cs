@@ -1,6 +1,8 @@
 using Data.Entities;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 using SurveryPoll.DataAccess.Contexts;
 using SurveryPoll.DataAccess.Entities;
 using SurveryPoll.DataAccess.Repositories;
@@ -38,7 +40,8 @@ builder.Services.AddIdentity<AppUser, AppRole>(
         // Hesabýn kilitlendiði süre (dakika cinsinden)
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     }
-    ).AddEntityFrameworkStores<Context>();
+    ).AddEntityFrameworkStores<Context>()
+    .AddDefaultTokenProviders(); ;
 builder.Services.AddMvc().AddFluentValidation();
 
 builder.Services.AddControllers();
@@ -66,4 +69,50 @@ app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    try
+    {
+        var userManager = services.GetRequiredService<UserManager<AppUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+
+        // Admin rolünü oluþtur
+        var adminRole = await roleManager.FindByNameAsync("Admin");
+        if (adminRole == null)
+        {
+            adminRole = new AppRole
+            {
+                Name = "Admin",
+            };
+            await roleManager.CreateAsync(adminRole);
+        }
+
+        // Admin kullanýcýsýný oluþtur
+        var adminUser = await userManager.FindByNameAsync("admin@example.com");
+        if (adminUser == null)
+        {
+            adminUser = new AppUser
+            {
+                Name ="Admin",
+                Surname="Admin",
+                UserName = "admin@example.com",
+                Status=1,
+                Email = "admin@example.com"
+                
+            };
+
+            await userManager.CreateAsync(adminUser, "12345678Eb*"); // Güçlü ve güvenli bir þifre kullanýn
+
+            // Admin kullanýcýsýný Admin rolüne ekle
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
+}
 app.Run();

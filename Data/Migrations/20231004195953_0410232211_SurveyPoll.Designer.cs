@@ -12,8 +12,8 @@ using SurveryPoll.DataAccess.Contexts;
 namespace SurveryPoll.DataAccess.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20231004114124_0410231441_SurveyPoll")]
-    partial class _0410231441_SurveyPoll
+    [Migration("20231004195953_0410232211_SurveyPoll")]
+    partial class _0410232211_SurveyPoll
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

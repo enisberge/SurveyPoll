@@ -9,6 +9,7 @@ namespace SurveryPoll.DataAccess.Entities
 {
     public class AppRole:IdentityRole<int>
     {
+
         public DateTime CreatedDate{ get; set; }
     }
 }

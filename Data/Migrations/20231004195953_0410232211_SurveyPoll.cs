@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SurveryPoll.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class _0410231441_SurveyPoll : Migration
+    public partial class _0410232211_SurveyPoll : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
