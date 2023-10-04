@@ -21,6 +21,8 @@ namespace SurveryPoll.DataAccess.Contexts
         public DbSet<Survey> Surveys{ get; set; }
         public DbSet<CorrectAnswer>CorrectAnswers { get; set; }
         public DbSet<SurveyQuestion> SurveyQuestion { get; set; }
+        public DbSet<SurveyResponse> SurveyResponses { get; set; }
+
 
         //public Context(DbContextOptions<Context> options):base(options) { 
 

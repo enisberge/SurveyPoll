@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SurveryPoll.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class _0310231736_SurveyPoll : Migration
+    public partial class _0410230632_SurveyPoll : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -60,6 +60,23 @@ namespace SurveryPoll.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SurveyResponses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    QuestionId = table.Column<int>(type: "int", nullable: false),
+                    QuestionOptionId = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SurveyResponses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Surveys",
                 columns: table => new
                 {
@@ -69,7 +86,8 @@ namespace SurveryPoll.DataAccess.Migrations
                     SurveyCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -357,6 +375,9 @@ namespace SurveryPoll.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "SurveyQuestion");
+
+            migrationBuilder.DropTable(
+                name: "SurveyResponses");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

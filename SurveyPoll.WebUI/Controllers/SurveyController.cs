@@ -36,8 +36,19 @@ namespace SurveyPoll.WebUI.Controllers
         {
             return View();
         }
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await _userManager.GetUserAsync(User);
+
+                if (user != null)
+                {
+                    // Kullanıcı adı ve soyadı alanlarını doldurun
+                    ViewBag.FirstName = user.Name; // Özelleştirilmiş kullanıcı modelinizdeki ad alanı
+                    ViewBag.LastName = user.Surname;   // Özelleştirilmiş kullanıcı modelinizdeki soyad alanı
+                }
+            }
             return View();
         }
 
@@ -97,6 +108,7 @@ namespace SurveyPoll.WebUI.Controllers
                 LastName = model.LastName,
                 Title = model.Title,
                 SurveyCode = SurveyCode,
+                CreatedDate = DateTime.Now,
                 UserId = user == null ? 0 : user.Id
             };
             _surveyRepository.Add(survey);
@@ -121,7 +133,7 @@ namespace SurveyPoll.WebUI.Controllers
 
             _correctAnswerRepository.AddRange(correctAnswers);
 
-            return Json(new { isSuccess = true, message = "Anket oluşturma başarılı !",data= baseUrl +"/MakeSurvey/"+ SurveyCode
+            return Json(new { isSuccess = true, message = "Anket oluşturma başarılı !",data= baseUrl +"/Survey/MakeSurvey/"+ SurveyCode
         });
         }
     }
