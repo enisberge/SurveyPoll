@@ -11,10 +11,9 @@ namespace SurveryPoll.DataAccess.Entities
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName{ get; set; }
-        public int QuestionId{ get; set; }
-        public int QuestionOptionId { get; set; }
         public string SurveyCode { get; set; }
+        public int SurveyId { get; set; }
         public DateTime CreatedDate { get; set; }
-
+        public List<Answer> Answers { get; set; }
     }
 }

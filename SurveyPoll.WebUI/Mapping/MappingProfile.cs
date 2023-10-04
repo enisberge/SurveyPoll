@@ -14,6 +14,7 @@ namespace SurveyPoll.WebUI.Mapping
             CreateMap<AppUser,AppUserViewModel >().ReverseMap();
             CreateMap<Question,QuestionViewModel>().ReverseMap();
             CreateMap<QuestionOption, QuestionOptionViewModel>().ReverseMap();
+            CreateMap<Survey,SurveyListModel >().ReverseMap();
 
 
 

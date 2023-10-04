@@ -273,13 +273,13 @@
                 // Ekle düğmesine tıklanıldığında yapılacak işlemleri burada gerçekleştirin
                 var questionId = $(this).attr('question-id');
                 var selectedOption = $("input[type='radio'][name='question-" + questionId + "']:checked");
-                $("input[type='radio'][name=question-" + questionId + "]").prop("disabled", true);
 
                 if (selectedOption.length === 0) {
                     toastr.error("Şıklardan birini seçmeden soru ekleyemezsiniz !");
                     return false;
                 }
-
+              
+                $("input[type='radio'][name=question-" + questionId + "]").prop("disabled", true);
                 var selectedOptionValue = selectedOption.val(); // Seçilen radio butonunun value'sini alın
 
                 // Soru ve cevap nesnesini oluşturun

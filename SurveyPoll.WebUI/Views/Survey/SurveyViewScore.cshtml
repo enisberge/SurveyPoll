@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Skor Tablosu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+
+@model X.PagedList.IPagedList<UserScoreDto>;
+@section Styles{
+    <link href="~/css/pagedlist.css" rel="stylesheet" />
+}
+   
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-md-8">
+                <h6 class="card-title mb-0 text-primary">@Model[0].SurveyTitle</h6>
+            </div>
+            <div class="col-md-4">
+                <a class="btn btn-primary btn-sm float-right" href="/Survey/SurveyList"> Geri</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Adı</th>
+                        <th>Soyadı</th>
+                        <th class="text-center">Doğru Sayısı</th>
+                        <th class="text-center">Yanlış Sayısı</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        @foreach (var user in Model)
+                        {
+                            <td>@user.FirstName</td>
+                            <td>@user.LastName</td>
+                            <td class="text-center"><span class="badge badge-success">@user.CorrectCount</span></td>
+                            <td class="text-center"><span class="badge badge-danger">@user.WrongCount</span></td>
+
+                        }
+
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+        @Html.PagedListPager(Model,
+        page => Url.Action("SurveyViewscore",new{ page }),
+        new PagedListRenderOptions(){ DisplayLinkToFirstPage=PagedListDisplayMode.Always})
+    </div>
+</div>

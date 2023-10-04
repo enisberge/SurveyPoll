@@ -6,6 +6,7 @@
     ViewData["Title"] = "Anket Cevapla";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 @section Styles{
     <style>
         .firstpage {
@@ -49,13 +50,14 @@
 
     </style>
 }
+    <link href="~/css/pagedlist.css" rel="stylesheet" />
 <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-8 page">
         <div class="card shadow border-left-warning">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h4 class="m-0 font-weight-bold text-primary">@Model.Title</h4>
+                <h4 class="m-0 font-weight-bold text-primary">@Model.Title </h4>
             </div>
             <!-- Card Body -->
             <div class="card-body firstpage">
@@ -88,7 +90,7 @@
                             </a>
                         </div>
                         <div class="col-md-12 mt-2 text-center">
-                            <a href="#" class="btn btn-primary btn-icon-split">
+                            <a href="/Survey/SurveyViewscore/@ViewBag.SurveyCode" class="btn btn-primary btn-icon-split">
                                 <span class="icon text-white-50">
                                     <i class="fas fa-chart-line"></i>
                                 </span>
@@ -137,7 +139,54 @@
         <div class="col-md-2"></div>
     </div>
 }
-
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8 lastpage" style="display:none">
+        <div class="card shadow border-left-warning">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h4 class="m-0 font-weight-bold text-primary">@Model.Title</h4>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body " >
+                <div class="chart-area">
+                    <h4 style="text-align:center;font-weight:bold">Tebrikler Anketi Başarıyla Tamamladınız !</h4>
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6 mt-5">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div class="mr-2" style="font-size:20px">Doğru Sayısı :</div>
+                                <span class="badge badge-success" id="correctAnswer" style="font-size:20px">5</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div class="mr-2" style="font-size:20px">Yanlış Sayısı :</div>
+                                <span class="badge badge-danger" id="wrongAnswer" style="font-size:20px">5</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div class="mr-2" style="font-size:20px">Toplam Soru Sayısı :</div>
+                                <span class="badge badge-primary" id="totalQuestionCount" style="font-size:20px">5</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2"></div>
+</div>
 
 
 @section Scripts{
@@ -145,25 +194,50 @@
     <script>
         var correctAnswers = @Html.Raw(Json.Serialize(Model.CorrectAnswers));
         var questionCount = @Model.Questions.Count;
+        var surveyId=@ViewBag.SurveyId;
         $(function () {
             var selectedOptions = [];
-            var surveyResponse = { 
+            var surveyResponse = {
+                SurveyId:"",
                 FirstName: "",
                 LastName: "",
                 SurveyCode: "",
-                selectedOptions: []     
+                Answers: []
             };
             var currentPage = 1;
 
             $(".finishsurvey").click(function () {
+                surveyResponse.SurveyId=surveyId;
                 $.ajax({
                     type: "POST",
-                    url: "/Survey/SurveyResponse", 
-                    contentType: "application/json", // Veri türü JSON olarak belirtiliyor
-                    data: JSON.stringify(surveyResponse), // JSON verisi gönderiliyor
+                    url: "/Survey/SurveyResponse",
+                    contentType: "application/json",
+                    data: JSON.stringify(surveyResponse),
                     success: function (response) {
-                        // Başarılı bir yanıt aldığınızda burası çalışır
-                        console.log(response);
+                        if (response.isSuccess) {
+                            var correctCount = 0;
+                            var wrongCount = 0;
+
+                            surveyResponse.Answers.forEach(function (responseAnswer) {
+                                var matchingCorrectAnswer = correctAnswers.find(function (correct) {
+                                    return correct.questionId === responseAnswer.questionId &&
+                                        correct.questionOptionId === responseAnswer.questionOptionId;
+                                });
+
+                                if (matchingCorrectAnswer) {
+                                    correctCount++;
+                                } else {
+                                    wrongCount++;
+                                }
+                            });
+                            $(".page").hide();
+                            $(".lastpage").show();
+                            $("#correctAnswer").text(correctCount);
+                            $("#wrongAnswer").text(wrongCount);
+                            $("#totalQuestionCount").text(correctCount + wrongCount);
+                          
+                        }
+
                     },
                     error: function (error) {
                         // Hata oluştuğunda burası çalışır
@@ -214,11 +288,11 @@
                 var optionId = $(this).val();
 
                 selectedOptions.push({
-                    questionId:parseInt(questionId),
-                    optionId: parseInt(optionId)
+                    questionId: parseInt(questionId),
+                    questionOptionId: parseInt(optionId)
                 });
 
-                surveyResponse.selectedOptions = selectedOptions;
+                surveyResponse.Answers = selectedOptions;
                 console.log(surveyResponse);
                 var optionName = "question-" + questionId;
 

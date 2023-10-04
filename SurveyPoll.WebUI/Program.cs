@@ -23,6 +23,7 @@ builder.Services.AddScoped<SurveyRepository>();
 builder.Services.AddScoped<CorrectAnswerRepository>();
 builder.Services.AddScoped<SurveyQuestionRepository>();
 builder.Services.AddScoped<SurveyResponseRepository>();
+builder.Services.AddScoped<AnswerRepository>();
 
 builder.Services.AddHttpContextAccessor();
 

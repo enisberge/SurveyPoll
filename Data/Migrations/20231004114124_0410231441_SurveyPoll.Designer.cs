@@ -12,8 +12,8 @@ using SurveryPoll.DataAccess.Contexts;
 namespace SurveryPoll.DataAccess.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20231004033547_0410230632_SurveyPoll")]
-    partial class _0410230632_SurveyPoll
+    [Migration("20231004114124_0410231441_SurveyPoll")]
+    partial class _0410231441_SurveyPoll
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -217,6 +217,30 @@ namespace SurveryPoll.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("SurveryPoll.DataAccess.Entities.Answer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionOptionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SurveyResponseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SurveyResponseId");
+
+                    b.ToTable("Answer");
+                });
+
             modelBuilder.Entity("SurveryPoll.DataAccess.Entities.AppRole", b =>
                 {
                     b.Property<int>("Id")
@@ -399,13 +423,16 @@ namespace SurveryPoll.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("int");
+                    b.Property<string>("SurveyCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("QuestionOptionId")
+                    b.Property<int>("SurveyId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SurveyId");
 
                     b.ToTable("SurveyResponses");
                 });
@@ -461,6 +488,17 @@ namespace SurveryPoll.DataAccess.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SurveryPoll.DataAccess.Entities.Answer", b =>
+                {
+                    b.HasOne("SurveryPoll.DataAccess.Entities.SurveyResponse", "SurveyResponse")
+                        .WithMany("Answers")
+                        .HasForeignKey("SurveyResponseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SurveyResponse");
+                });
+
             modelBuilder.Entity("SurveryPoll.DataAccess.Entities.CorrectAnswer", b =>
                 {
                     b.HasOne("SurveryPoll.DataAccess.Entities.Survey", null)
@@ -511,6 +549,15 @@ namespace SurveryPoll.DataAccess.Migrations
                     b.Navigation("Survey");
                 });
 
+            modelBuilder.Entity("SurveryPoll.DataAccess.Entities.SurveyResponse", b =>
+                {
+                    b.HasOne("SurveryPoll.DataAccess.Entities.Survey", null)
+                        .WithMany("SurveyResponses")
+                        .HasForeignKey("SurveyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Data.Entities.AppUser", b =>
                 {
                     b.Navigation("Questions");
@@ -528,6 +575,13 @@ namespace SurveryPoll.DataAccess.Migrations
                     b.Navigation("CorrectAnswers");
 
                     b.Navigation("SurveyQuestions");
+
+                    b.Navigation("SurveyResponses");
+                });
+
+            modelBuilder.Entity("SurveryPoll.DataAccess.Entities.SurveyResponse", b =>
+                {
+                    b.Navigation("Answers");
                 });
 #pragma warning restore 612, 618
         }

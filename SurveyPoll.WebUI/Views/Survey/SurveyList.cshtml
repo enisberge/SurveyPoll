@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Anket";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="card-title mb-0 text-primary">Anketler</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="surveyTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Anket Başlığı</th>
+                            <th>Oluşturan Ad</th>
+                            <th>Oluşturan Soyad</th>
+                            <th>Oluşturma Tarihi</th>
+                            <th>İşlemler</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        var recordtable;
+        $(function () {
+
+            recordtable = $('#surveyTable').DataTable({
+                language: {
+                    url: '../lib/language/tr.json',
+                },
+                "ajax": {
+                    "url": "/Survey/GetSurveyList", // Veri çekmek için kullanacağınız URL
+                    "type": "GET", // HTTP isteği türü (GET veya POST)
+                    "dataSrc": "" // Verilerinizi içeren JSON nesnesinin kökü (eğer JSON veri dizisi içinde ise boş bırakabilirsiniz)
+                },
+                "columns": [
+                    { "data": "title" },
+                    { "data": "firstName" },
+                    { "data": "lastName" },
+                    {
+                        "data": "createdDate", className: "text-center", render: function (data, type, row) {
+                            if (data != null && data != "")
+                                return moment(data).format("DD.MM.YYYY");
+                            else
+                                return "";
+                        }
+                    },
+                    {
+                        "data": "surveyCode", className: "text-center text-nowrap", render: function (data, type, row) {
+                            return "<a href='/Survey/SurveyViewscore/"+data+"' class='btn btn-warning btn-icon-split btn-sm' data-toggle='tooltip' id='btnEdit' data-placement='left' title='Skor Görüntüle'><span class='icon text-white-50' ><i class='fas fa-info-circle'></i></span><span class='text' > Skor Görüntüle </span></a>";
+                        }
+                    }
+
+                ]
+            });
+
+
+        });
+
+
+    </script>
+}

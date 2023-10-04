@@ -2,6 +2,7 @@
 using Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using SurveryPoll.DataAccess.Entities;
 using SurveryPoll.DataAccess.Repositories;
@@ -20,16 +21,18 @@ namespace SurveyPoll.WebUI.Controllers
         private readonly CorrectAnswerRepository _correctAnswerRepository;
         private readonly SurveyQuestionRepository _surveyQuestionRepository;
         private readonly SurveyResponseRepository _surveyResponseRepository;
+        private readonly AnswerRepository _answerRepository;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        public SurveyController(QuestionRepository questionRepository, IMapper mapper, SurveyRepository surveyRepository, UserManager<AppUser> userManager, CorrectAnswerRepository correctAnswerRepository, IHttpContextAccessor httpContextAccessor, SurveyQuestionRepository surveyQuestionRepository, SurveyResponseRepository surveyResponseRepository)
+        public SurveyController(QuestionRepository questionRepository, IMapper mapper, SurveyRepository surveyRepository, UserManager<AppUser> userManager, CorrectAnswerRepository correctAnswerRepository, IHttpContextAccessor httpContextAccessor, SurveyQuestionRepository surveyQuestionRepository, SurveyResponseRepository surveyResponseRepository, AnswerRepository answerRepository)
         {
             _questionRepository = questionRepository;
             _surveyRepository = surveyRepository;
             _correctAnswerRepository = correctAnswerRepository;
-            _surveyQuestionRepository= surveyQuestionRepository;
+            _surveyQuestionRepository = surveyQuestionRepository;
             _surveyResponseRepository = surveyResponseRepository;
+            _answerRepository = answerRepository;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _mapper = mapper;
@@ -71,6 +74,21 @@ namespace SurveyPoll.WebUI.Controllers
             return Json(new { Data = pageData, TotalPages = totalPages });
 
         }
+        [HttpGet("Survey/SurveyViewscore/{surveyCode}")]
+        public async Task<IActionResult> SurveyViewscore(string surveyCode, int? page)
+        {
+            int pageNumber = page ?? 1; // Sayfa numarasını belirle, varsayılan olarak 1
+            int pageSize = 10; // Her sayfa için gösterilecek öğe sayısı
+
+            List<UserScoreDto> UserScores = _surveyRepository.GetUserScoresBySurveyCode(surveyCode);
+
+            IPagedList<UserScoreDto> pagedUserScores = UserScores.ToPagedList(pageNumber, pageSize);
+
+            return View(pagedUserScores);
+        }
+
+
+
         [HttpGet("Survey/MakeSurvey/{surveyCode}")]
 
         public async Task<IActionResult> MakeSurvey(string surveyCode)
@@ -85,26 +103,52 @@ namespace SurveyPoll.WebUI.Controllers
                 Questions = result.SurveyQuestions.Select(sq => sq.Question).ToList(),
                 CorrectAnswers = result.CorrectAnswers
             };
+
+            ViewBag.SurveyCode = surveyCode;
+            ViewBag.SurveyId = result.Id;
             return View(viewModel);
 
         }
+        [HttpGet]
+        public async Task<IActionResult> GetSurveyList()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var values = _surveyRepository.GetSurveyListByUserId(user.Id);
+
+            var surveyList=_mapper.Map<List<SurveyListModel>>(values);
+            return Json(surveyList);  
+        }
+        public IActionResult SurveyList()
+        {
+            return View();
+        }
+
         [HttpPost]
-        public async Task<IActionResult> SurveyResponse([FromBody]SurveyResponseModel model)
+        public async Task<IActionResult> SurveyResponse([FromBody] SurveyResponseModel model)
         {
 
-            foreach (var option in model.SelectedOptions)
+            var surveyResponse = new SurveyResponse
             {
-                var surveyResponse = new SurveyResponse
-                {
-                    FirstName=model.FirstName,
-                    LastName=model.LastName,
-                    SurveyCode=model.SurveyCode,
-                    QuestionId=option.QuestionId,
-                    QuestionOptionId=option.OptionId
-                };
-                _surveyResponseRepository.Add(surveyResponse);
-            }
-            return Ok("Başarılı bir şekilde alındı.");
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                SurveyCode = model.SurveyCode,
+                CreatedDate = DateTime.Now,
+                SurveyId = model.SurveyId
+            };
+
+            _surveyResponseRepository.Add(surveyResponse);
+
+            var answerResponse = model.Answers
+     .Select(answer => new Answer
+     {
+         QuestionId = answer.QuestionId,
+         QuestionOptionId = answer.QuestionOptionId,
+         SurveyResponseId = surveyResponse.Id
+     })
+     .ToList();
+            _answerRepository.AddRange(answerResponse);
+
+            return Json(new { isSuccess = true });
 
         }
         public IActionResult MakeSurvey()
@@ -137,7 +181,7 @@ namespace SurveyPoll.WebUI.Controllers
      .Select(question => new SurveyQuestion
      {
          QuestionId = question.QuestionId,
-         SurveyId=survey.Id
+         SurveyId = survey.Id
      })
      .ToList();
             _surveyQuestionRepository.AddRange(surveyQuestion);
@@ -153,8 +197,12 @@ namespace SurveyPoll.WebUI.Controllers
 
             _correctAnswerRepository.AddRange(correctAnswers);
 
-            return Json(new { isSuccess = true, message = "Anket oluşturma başarılı !",data= baseUrl +"/Survey/MakeSurvey/"+ SurveyCode
-        });
+            return Json(new
+            {
+                isSuccess = true,
+                message = "Anket oluşturma başarılı !",
+                data = baseUrl + "/Survey/MakeSurvey/" + SurveyCode
+            });
         }
     }
 }

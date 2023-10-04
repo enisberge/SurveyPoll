@@ -15,6 +15,7 @@ namespace SurveryPoll.DataAccess.Entities
         public string LastName { get; set; }
         public string Title { get; set; }
         public DateTime CreatedDate { get; set; }
+        public List<SurveyResponse> SurveyResponses { get; set; }
         public List<CorrectAnswer> CorrectAnswers { get; set; }
         public List<SurveyQuestion> SurveyQuestions { get; set; }
 
